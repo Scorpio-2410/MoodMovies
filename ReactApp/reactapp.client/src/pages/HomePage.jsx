@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Smile, Frown, Laugh, Heart, Star, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const moods = [
   { name: "Happy", icon: Smile },
@@ -21,54 +22,74 @@ const HomePage = () => {
     setSelectedMood(mood);
     // Need to implement API call to get movie recommendations based on mood
     // Using dummy data for now
-    setRecommendations([
-      {
-        id: 1,
-        title: "The Shawshank Redemption",
-        poster:
-          "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-        rating: 9.3,
-        synopsis:
-          "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-      },
-      {
-        id: 2,
-        title: "The Godfather",
-        poster:
-          "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-        rating: 9.2,
-        synopsis:
-          "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
-      },
-      {
-        id: 3,
-        title: "The Dark Knight",
-        poster:
-          "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-        rating: 9.0,
-        synopsis:
-          "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-      },
-      {
-        id: 3,
-        title: "The Dark Knight",
-        poster:
-          "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-        rating: 9.0,
-        synopsis:
-          "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-      },
-    ]);
+    const moodRecommendations = {
+      Happy: [
+        {
+          id: 1,
+          title: "The Shawshank Redemption",
+          poster:
+            "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+          rating: 9.3,
+          synopsis:
+            "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+        },
+      ],
+      Sad: [
+        {
+          id: 1,
+          title: "The Shawshank Redemption",
+          poster:
+            "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+          rating: 9.3,
+          synopsis:
+            "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+        },
+        {
+          id: 2,
+          title: "Schindler's List",
+          poster:
+            "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
+          rating: 8.9,
+          synopsis:
+            "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+        },
+      ],
+      Excited: [
+        {
+          id: 3,
+          title: "The Dark Knight",
+          poster:
+            "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+          rating: 9.0,
+          synopsis:
+            "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+        },
+        {
+          id: 4,
+          title: "Inception",
+          poster:
+            "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+          rating: 8.8,
+          synopsis:
+            "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+        },
+      ],
+    };
+
+    setRecommendations(moodRecommendations[mood] || []);
   };
 
   const handleMovieClick = (movieId) => {
     navigate(`/movie/${movieId}`);
   };
 
-  const handleAddToList = (event, movieId) => {
+  const handleAddToList = (event, movieId, movieTitle) => {
     event.stopPropagation();
     // Need to implement add to list functionality
-    console.log(`Added movie ${movieId} to list`);
+    console.log(`Added movie ${movieTitle} to list`);
+    toast.success(`Added "${movieTitle}" to your list`, {
+      duration: 2000,
+    });
   };
 
   return (
@@ -118,7 +139,9 @@ const HomePage = () => {
                         size="sm"
                         variant="outline"
                         className="text-xs"
-                        onClick={(e) => handleAddToList(e, movie.id)}
+                        onClick={(e) =>
+                          handleAddToList(e, movie.id, movie.title)
+                        }
                       >
                         <Plus className="h-4 w-4 mr-1" />
                         Add to List

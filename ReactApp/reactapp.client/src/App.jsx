@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage.jsx";
 import WeatherPage from "./pages/WeatherPage";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           {/* <Route path="/my-list" element={<MyMovieListPage />} />*/}
           <Route path="/weather" element={<WeatherPage />} />
         </Routes>
+        <Toaster />
       </div>
     </Router>
   );
