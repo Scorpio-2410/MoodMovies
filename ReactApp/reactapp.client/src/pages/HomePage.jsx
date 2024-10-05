@@ -16,7 +16,7 @@ const moods = [
 const HomePage = () => {
   const [selectedMood, setSelectedMood] = useState("");
   const [recommendations, setRecommendations] = useState([]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleMoodSelect = (mood) => {
     setSelectedMood(mood);
@@ -33,8 +33,53 @@ const HomePage = () => {
           synopsis:
             "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
         },
+        {
+          id: 2,
+          title: "Schindler's List",
+          poster:
+            "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
+          rating: 8.9,
+          synopsis:
+            "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+        },
+        {
+          id: 1,
+          title: "The Shawshank Redemption",
+          poster:
+            "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+          rating: 9.3,
+          synopsis:
+            "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+        },
+        {
+          id: 2,
+          title: "Schindler's List",
+          poster:
+            "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
+          rating: 8.9,
+          synopsis:
+            "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+        },
       ],
       Sad: [
+        {
+          id: 1,
+          title: "The Shawshank Redemption",
+          poster:
+            "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
+          rating: 9.3,
+          synopsis:
+            "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+        },
+        {
+          id: 2,
+          title: "Schindler's List",
+          poster:
+            "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
+          rating: 8.9,
+          synopsis:
+            "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+        },
         {
           id: 1,
           title: "The Shawshank Redemption",
@@ -79,9 +124,9 @@ const HomePage = () => {
     setRecommendations(moodRecommendations[mood] || []);
   };
 
-  const handleMovieClick = (movieId) => {
-    navigate(`/movie/${movieId}`);
-  };
+  // const handleMovieClick = (movieId) => {
+  //   navigate(`/movie/${movieId}`);
+  // };
 
   const handleAddToList = (event, movieId, movieTitle) => {
     event.stopPropagation();
