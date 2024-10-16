@@ -1,19 +1,29 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     console.log("Login Data: ", data);
     // Handle your login logic here (e.g., API call)
   };
 
-  console.log(watch("username")); // Watch username input value
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSignupClick = () => {
+    navigate("/register");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -23,25 +33,34 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username field */}
           <div>
-            <label className="block text-gray-700">Username</label>
+            <label className="block text-gray-700 mb-1">Username</label>
             <input
               type="text"
               placeholder="Enter Username"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               {...register("username", { required: "Username is required" })}
             />
             {errors.username && <span className="text-red-500">{errors.username.message}</span>}
           </div>
 
-          {/* Password field */}
+          {/* Password field with eye button */}
           <div>
-            <label className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              {...register("password", { required: "Password is required" })}
-            />
+            <label className="block text-gray-700 mb-1">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter Password"
+                className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                {...register("password", { required: "Password is required" })}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
             {errors.password && <span className="text-red-500">{errors.password.message}</span>}
           </div>
 
@@ -64,9 +83,9 @@ export default function LoginPage() {
 
         <div className="mt-2 text-center">
           <span className="text-sm text-gray-700">Don't have an account?</span>
-          <a href="/signup" className="ml-1 text-sm text-indigo-600 hover:underline">
+          <button onClick={handleSignupClick} className="ml-1 text-sm text-indigo-600 hover:underline">
             Sign Up
-          </a>
+          </button>
         </div>
       </div>
     </div>
