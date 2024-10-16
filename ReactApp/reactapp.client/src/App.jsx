@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage.jsx";
 import WeatherPage from "./pages/WeatherPage";
 import LoginPage from "./pages/LoginPage"
+import RegisterPage from "./pages/RegisterPage"
 import { Toaster } from "sonner";
 
 function App() {
@@ -13,10 +14,11 @@ function App() {
         <Routes>
           {/* <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} /> */}
+          <Route path="" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/home" element={<HomePage />} />
           {/* <Route path="/my-list" element={<MyMovieListPage />} />*/}
           <Route path="/weather" element={<WeatherPage />} />
-          <Route path="" element={<LoginPage />} />
         </Routes>
         <Toaster />
       </div>
