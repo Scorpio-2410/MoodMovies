@@ -8,18 +8,13 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
     watch,
-    trigger,
   } = useForm({
     mode: "onSubmit", // Validate form only on submit
     reValidateMode: "onChange", // Revalidate fields when their value changes
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordCriteria, setPasswordCriteria] = useState({
-    length: false,
-    uppercase: false,
-    number: false,
-    specialChar: false,
-  });
+  const [passwordStrength, setPasswordStrength] = useState(0); // Keep track of password strength
+  const [emoji, setEmoji] = useState("😡"); // Set initial emoji to angry
   const navigate = useNavigate();
   const password = watch("password");
 
@@ -33,17 +28,30 @@ export default function RegisterPage() {
     setShowPassword(!showPassword);
   };
 
-  // Validate password against the required criteria
+  // Validate password and calculate strength
   const validatePasswordStrength = (password) => {
-    setPasswordCriteria({
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      number: /[0-9]/.test(password),
-      specialChar: /[^A-Za-z0-9]/.test(password),
-    });
+    let strength = 0;
+
+    if (password.length >= 8) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+    setPasswordStrength(strength);
+
+    // Set emoji and color based on strength
+    if (strength === 4) {
+      setEmoji("😁"); // Green with a happy emoji
+    } else if (strength === 3) {
+      setEmoji("😐"); // Yellow with neutral emoji
+    } else if (strength === 2) {
+      setEmoji("😞"); // Orange with sad emoji
+    } else {
+      setEmoji("😡"); // Red with angry emoji
+    }
   };
 
-  // Watch for password input changes
+  // Watch for password input changes and validate strength
   const handlePasswordChange = (e) => {
     validatePasswordStrength(e.target.value);
   };
@@ -142,7 +150,7 @@ export default function RegisterPage() {
                 className="absolute inset-y-0 right-3 flex items-center"
                 onClick={togglePasswordVisibility}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? "🤐" : "🧐"}
               </button>
             </div>
             {errors.password && (
@@ -153,6 +161,25 @@ export default function RegisterPage() {
                 <li>Password must contain at least one special character</li>
               </ul>
             )}
+
+            {/* Password Strength Bar */}
+            <div className="flex items-center mt-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mr-3">
+                <div
+                  className={`h-2.5 rounded-full ${
+                    passwordStrength === 4
+                      ? "bg-green-600"
+                      : passwordStrength === 3
+                      ? "bg-yellow-500"
+                      : passwordStrength === 2
+                      ? "bg-orange-500"
+                      : "bg-red-600"
+                  }`}
+                  style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                ></div>
+              </div>
+              <span>{emoji}</span>
+            </div>
           </div>
 
           {/* Confirm Password */}

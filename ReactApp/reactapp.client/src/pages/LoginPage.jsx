@@ -58,7 +58,7 @@ export default function LoginPage() {
                 className="absolute inset-y-0 right-3 flex items-center"
                 onClick={togglePasswordVisibility}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? "🤐" : "🧐"}
               </button>
             </div>
             {errors.password && <span className="text-red-500">{errors.password.message}</span>}
