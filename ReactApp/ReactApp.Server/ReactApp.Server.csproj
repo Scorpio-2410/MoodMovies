@@ -9,11 +9,24 @@
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-      <Version>8.*-*</Version>
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.*-*">
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Scrutor" Version="5.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -22,4 +35,21 @@
     </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Mood_Moives_SQLDB\" />
+    <None Remove="Features\" />
+    <None Remove="Features\Users\" />
+    <None Remove="mood_movies.db" />
+    <None Remove="Infrastructure\" />
+    <None Remove="Infrastructure\Validations\" />
+    <None Remove="Infrastructure\Middlewares\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mood_Moives_SQLDB\" />
+    <Folder Include="Features\" />
+    <Folder Include="Features\Users\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Infrastructure\Validations\" />
+    <Folder Include="Infrastructure\Middlewares\" />
+  </ItemGroup>
 </Project>
