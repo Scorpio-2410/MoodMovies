@@ -1,7 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
-import plugin from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
@@ -25,17 +24,20 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
         '--format',
         'Pem',
         '--no-password',
-    ], { stdio: 'inherit', }).status) {
+    ], { stdio: 'inherit' }).status) {
         throw new Error("Could not create certificate.");
     }
 }
 
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7267';
+const target = env.ASPNETCORE_HTTPS_PORT 
+    ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` 
+    : env.ASPNETCORE_URLS 
+        ? env.ASPNETCORE_URLS.split(';')[0] 
+        : 'https://localhost:7267';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [react()],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -43,9 +45,12 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/weatherforecast': {
-                target,
-                secure: false
+            // Proxy all API requests to the ASP.NET Core backend
+            '^/api/.*': {
+                target, // The ASP.NET Core backend
+                changeOrigin: true,
+                secure: false,  // Disable SSL certificate verification in dev
+                rewrite: (path) => path.replace(/^\/api/, '') // Optional rewrite if your API path doesn't start with `/api`
             }
         },
         port: 5173,
@@ -54,4 +59,5 @@ export default defineConfig({
             cert: fs.readFileSync(certFilePath),
         }
     }
-})
+});
+

@@ -9,11 +9,41 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // State to handle errors
   const navigate = useNavigate();
 
-  const onSubmit = (data) => {
-    console.log("Login Data: ", data);
-    // Handle your login logic here (e.g., API call)
+  const onSubmit = async (data) => {
+    // Clear previous error messages
+    setErrorMessage('');
+
+    try {
+      // Send login request to the backend
+      const response = await fetch('/api/User/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userName: data.username,
+          userPassword: data.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const result = await response.json();
+
+      console.log("Login successful: ", result);
+
+      // Navigate to the /home page on successful login
+      navigate('/home');
+    } catch (error) {
+      // Set error message for failed login
+      setErrorMessage('Invalid username or password');
+      console.error('Error during login: ', error);
+    }
   };
 
   // Toggle password visibility
@@ -29,6 +59,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+
+        {errorMessage && (
+          <div className="text-red-500 text-center mb-4">
+            {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username field */}
@@ -91,3 +127,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

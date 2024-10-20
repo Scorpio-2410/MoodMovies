@@ -5,7 +5,6 @@ using FluentValidation;
 using ReactApp.Server.Infrastructure.Middlewares;  
 using ReactApp.Server.Infrastructure.Validations; 
 using Microsoft.AspNetCore.Mvc;
-using Scrutor;
 
 namespace ReactApp.Server
 {
