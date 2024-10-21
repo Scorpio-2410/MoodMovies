@@ -1,0 +1,25 @@
+/* NotFoundPage.css */
+
+/* Center the emoji without covering the countdown */
+.emoji-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Adds space between countdown and emoji */
+}
+
+/* Explosion effect */
+.explode span {
+  animation: explode 0.5s forwards; /* Explodes in 0.5 seconds */
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1); /* Initial size */
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0); /* Shrinks to nothing */
+    opacity: 0; /* Fades out */
+  }
+}

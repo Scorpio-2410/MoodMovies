@@ -2,14 +2,14 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-function LoginPage({ setIsLoggedIn }) {
+export default function LoginPage({ setIsLoggedIn }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(''); // State to handle errors
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
@@ -57,6 +57,10 @@ function LoginPage({ setIsLoggedIn }) {
 
   const handleSignupClick = () => {
     navigate("/register");
+  };
+
+  const handleForgotPasswordClick = () => {
+    navigate("/forgot-password"); // Redirect to Forgot Password page
   };
 
   return (
@@ -114,11 +118,14 @@ function LoginPage({ setIsLoggedIn }) {
           </div>
         </form>
 
-        {/* Links for Signup and Forgot Password */}
+        {/* Forgot Password and Sign Up Links */}
         <div className="mt-4 text-center">
-          <a href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
+          <button
+            onClick={handleForgotPasswordClick}
+            className="text-sm text-indigo-600 hover:underline"
+          >
             Forgot Password?
-          </a>
+          </button>
         </div>
 
         <div className="mt-2 text-center">
@@ -131,5 +138,3 @@ function LoginPage({ setIsLoggedIn }) {
     </div>
   );
 }
-
-export default LoginPage;

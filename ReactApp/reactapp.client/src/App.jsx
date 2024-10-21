@@ -4,7 +4,9 @@ import HomePage from "./pages/HomePage.jsx";
 import WeatherPage from "./pages/WeatherPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import IndexPage from "./pages/IndexPage";  // Renamed component
+import IndexPage from "./pages/IndexPage"; 
+import ForgotPasswordPage from "./pages/ForgotPasswordPage"; 
+import NotFoundPage from "./pages/NotFoundPage"; // Import NotFoundPage
 import { useState, useEffect } from "react";
 import { Toaster } from "sonner";
 import PrivateRoute from "./components/PrivateRoute";
@@ -25,12 +27,12 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
-        {/* Pass login status and logout function to Navbar */}
         <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<IndexPage />} />  {/* Updated path to use IndexPage */}
+          <Route path="/" element={<IndexPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />  
           <Route
             path="/home"
             element={
@@ -47,6 +49,8 @@ function App() {
               </PrivateRoute>
             }
           />
+          {/* Catch-all route for undefined paths */}
+          <Route path="*" element={<NotFoundPage isLoggedIn={isLoggedIn} />} /> {/* Pass isLoggedIn prop */}
         </Routes>
         <Toaster />
       </div>
@@ -55,3 +59,4 @@ function App() {
 }
 
 export default App;
+
