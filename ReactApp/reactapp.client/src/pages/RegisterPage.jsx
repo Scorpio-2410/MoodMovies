@@ -210,7 +210,7 @@ export default function RegisterPage() {
         {/* Link to go back to login */}
         <div className="mt-4 text-center">
           <span className="text-sm text-gray-700">Already a member?</span>
-          <button onClick={() => navigate("/")} className="ml-1 text-sm text-indigo-600 hover:underline">
+          <button onClick={() => navigate("/login")} className="ml-1 text-sm text-indigo-600 hover:underline">
             Login instead
           </button>
         </div>

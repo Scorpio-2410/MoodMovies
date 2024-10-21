@@ -9,15 +9,13 @@ public partial class MyMovieList
 
     public int? UserId { get; set; }
 
-    public int? MovieIds { get; set; }
+    public int? MovieId { get; set; }
 
     public bool? WatchStatus { get; set; }
 
-    public string? FavouriteMovie { get; set; }
+    public bool? IsFavourite { get; set; }
 
-    public string? MostGenre { get; set; }
-
-    public string? MostMood { get; set; }
+    public string? Comments { get; set; }
 
     public double? MovieRating { get; set; }
 

@@ -34,8 +34,8 @@ public partial class MoodMoviesContext : DbContext
             entity.ToTable("MyMovieList");
 
             entity.Property(e => e.MyListId).HasColumnName("MyListID");
-            entity.Property(e => e.FavouriteMovie).HasColumnType("VARCHAR(255)");
-            entity.Property(e => e.MovieIds).HasColumnName("MovieIDs");
+            entity.Property(e => e.IsFavourite).HasColumnType("BOOLEAN");
+            entity.Property(e => e.MovieId).HasColumnName("MovieID");
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.WatchStatus).HasColumnType("BOOLEAN");
 

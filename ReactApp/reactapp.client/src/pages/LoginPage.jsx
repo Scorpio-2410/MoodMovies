@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-export default function LoginPage() {
+function LoginPage({ setIsLoggedIn }) {
   const {
     register,
     handleSubmit,
@@ -35,7 +35,11 @@ export default function LoginPage() {
 
       const result = await response.json();
 
-      console.log("Login successful: ", result);
+      // Save token to localStorage
+      localStorage.setItem('token', result.token);
+
+      // Set the user as logged in
+      setIsLoggedIn(true);
 
       // Navigate to the /home page on successful login
       navigate('/home');
@@ -128,3 +132,4 @@ export default function LoginPage() {
   );
 }
 
+export default LoginPage;

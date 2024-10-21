@@ -19,5 +19,7 @@ public partial class Social
 
     public string? Comments { get; set; }
 
+    public int? NumberOfLikes { get; set; }
+
     public virtual User? User { get; set; }
 }
