@@ -2,8 +2,6 @@
 using FluentValidation;
 using ReactApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace ReactApp.Server.Features.Users
 {
@@ -56,8 +54,11 @@ namespace ReactApp.Server.Features.Users
                 throw new ValidationException("User not found.");
             }
 
-            // Update the user's password (hash the password ideally)
-            user.UserPassword = request.NewPassword; // Hashing the password should be done here for security
+            // Hash the new password using BCrypt
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            // Update the user's password
+            user.UserPassword = hashedPassword;
             await _context.SaveChangesAsync(cancellationToken);
 
             // Return a successful response

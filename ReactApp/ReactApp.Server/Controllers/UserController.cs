@@ -2,7 +2,6 @@
 using MediatR;
 using FluentValidation;
 using ReactApp.Server.Features.Users;
-using System.Threading.Tasks;
 
 namespace ReactApp.Server.Controllers
 {
