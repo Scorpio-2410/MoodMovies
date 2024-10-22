@@ -10,13 +10,18 @@ import NotFoundPage from "./pages/NotFoundPage"; // Import NotFoundPage
 import { useState, useEffect } from "react";
 import { Toaster } from "sonner";
 import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute"; // Import PublicRoute
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    if (token) {
+      setIsLoggedIn(true);
+    }
+    setIsLoading(false); // Set loading to false once the check is complete
   }, []);
 
   const handleLogout = () => {
@@ -24,15 +29,53 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  if (isLoading) {
+    // While loading, show a spinner or placeholder to avoid flickering
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<IndexPage />} />
-          <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />  
+          {/* Public Route for IndexPage, redirect to /home if logged in */}
+          <Route
+            path="/"
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn}>
+                <IndexPage />
+              </PublicRoute>
+            }
+          />
+
+          {/* Public Routes - Redirect logged-in users to home */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn}>
+                <LoginPage setIsLoggedIn={setIsLoggedIn} />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn}>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute isLoggedIn={isLoggedIn}>
+                <ForgotPasswordPage />
+              </PublicRoute>
+            }
+          />
+
+          {/* Private Routes - Only accessible when logged in */}
           <Route
             path="/home"
             element={
@@ -49,8 +92,9 @@ function App() {
               </PrivateRoute>
             }
           />
+
           {/* Catch-all route for undefined paths */}
-          <Route path="*" element={<NotFoundPage isLoggedIn={isLoggedIn} />} /> {/* Pass isLoggedIn prop */}
+          <Route path="*" element={<NotFoundPage isLoggedIn={isLoggedIn} />} />
         </Routes>
         <Toaster />
       </div>
