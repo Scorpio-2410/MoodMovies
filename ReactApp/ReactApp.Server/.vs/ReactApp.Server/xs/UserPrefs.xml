@@ -2,44 +2,31 @@
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.ItemProperties.ReactApp.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Mood_Moives_SQLDB/004 - Modified MyMovieList.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Mood_Moives_SQLDB/004 - Modified MyMovieList.sql">
     <Files>
-      <File FileName="Program.cs" />
-      <File FileName="Models/MoodMoviesContext.cs" />
-      <File FileName="Models/MyMovieList.cs" />
-      <File FileName="Models/Social.cs" />
-      <File FileName="Models/User.cs" />
-      <File FileName="Controllers/UserController.cs" />
-      <File FileName="Features/Users/UserLogin.cs" Line="51" Column="1" />
-      <File FileName="Features/Users/UpdateUser.cs" />
-      <File FileName="Infrastructure/Validations/FluentValidationPipeline.cs" />
-      <File FileName="Infrastructure/Validations/ValidationException.cs" />
-      <File FileName="Infrastructure/Middlewares/ErrorHandlingMiddleware.cs" />
-      <File FileName="Controllers/WeatherForecastController.cs" />
-      <File FileName="Properties/launchSettings.json" />
-      <File FileName="ReactApp.Server.http" />
-      <File FileName="Mood_Moives_SQLDB/001 - Intial_Test_DB.sql" />
-      <File FileName="Mood_Moives_SQLDB/002 - Added other classes.sql" />
-      <File FileName="Mood_Moives_SQLDB/003 - Added correct data types.sql" Line="30" Column="1" />
-      <File FileName="Mood_Moives_SQLDB/004 - Modified MyMovieList.txt" Line="2" Column="1" />
-      <File FileName="Features/Users/RegisterUser.cs" />
+      <File FileName="Controllers/UserController.cs" Line="31" Column="14" />
+      <File FileName="Services/Email.cs" Line="5" Column="1" />
+      <File FileName="Services/EmptyClass.cs" Line="26" Column="1" />
+      <File FileName="Program.cs" Line="39" Column="1" />
+      <File FileName="Models/MoodMoviesContext.cs" Line="1" Column="1" />
+      <File FileName="Mood_Moives_SQLDB/004 - Modified MyMovieList.txt" Line="32" Column="3" />
+      <File FileName="Mood_Moives_SQLDB/003 - Added correct data types.sql" Line="1" Column="1" />
+      <File FileName="Models/MyMovieList.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="ReactApp.Server">
             <Node name="ReactApp.Server">
+              <Node name="Controllers" expanded="True" />
               <Node name="Features" expanded="True">
                 <Node name="Users" expanded="True" />
               </Node>
               <Node name="Infrastructure" expanded="True">
-                <Node name="Middlewares" expanded="True" />
                 <Node name="Validations" expanded="True" />
               </Node>
-              <Node name="Mood_Moives_SQLDB" expanded="True">
-                <Node name="004 - Modified MyMovieList.txt" selected="True" />
-              </Node>
-              <Node name="Properties" expanded="True" />
+              <Node name="Models" expanded="True" />
+              <Node name="Mood_Moives_SQLDB" expanded="True" />
             </Node>
           </Node>
         </State>
