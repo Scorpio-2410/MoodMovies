@@ -1,10 +1,10 @@
 ﻿CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE User (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Primary Key
-    UserName VARCHAR(255) NOT NULL,            -- Username
+    UserName VARCHAR(255) NOT NULL UNIQUE,     -- Unique Username
     UserPassword VARCHAR(255) NOT NULL,        -- Password
     FullName TEXT,                             -- Full name
-    DOB DATETIME,                                  -- Date of Birth
+    DOB DATETIME,                              -- Date of Birth
     Email VARCHAR(255) UNIQUE,                 -- Unique Email
     BIO TEXT                                   -- Bio
 );

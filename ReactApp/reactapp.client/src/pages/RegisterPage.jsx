@@ -6,23 +6,25 @@ function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    watch,
+    watch, // Import watch to track form values
+    formState: { errors }
   } = useForm({
     mode: "onSubmit", // Validate form only on submit
     reValidateMode: "onChange", // Revalidate fields when their value changes
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Add a state for confirm password visibility
-  const [passwordStrength, setPasswordStrength] = useState(0); // Keep track of password strength
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0); // Track password strength
   const [emoji, setEmoji] = useState("😡"); // Set initial emoji to angry
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-  const password = watch("password");
+  
+  const password = watch("password"); // Watch the password input
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("api/user/register", {
+      const response = await fetch("/api/user/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,14 +33,17 @@ function RegisterPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to register");
+        throw new Error('Registration failed');
       }
 
-      // If registration is successful, navigate to the login page
+      // If registration is successful, alert the user
+      alert("Registration successful! Please login.");
+      
+      // Navigate to the login page after alerting the user
       navigate("/login");
     } catch (error) {
-      console.error("Error registering user: ", error);
+      setErrorMessage('Username or email already exists.');
+      console.error('Error during registration: ', error);
     }
   };
 
@@ -63,7 +68,7 @@ function RegisterPage() {
 
     setPasswordStrength(strength);
 
-    // Set emoji and color based on strength
+    // Set emoji based on strength
     if (strength === 4) {
       setEmoji("😁"); // Green with a happy emoji
     } else if (strength === 3) {
@@ -85,10 +90,7 @@ function RegisterPage() {
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)} // Handle form submission and validation
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Full Name */}
           <div>
             <label className="block text-gray-700 mb-1">Full Name</label>
@@ -211,7 +213,7 @@ function RegisterPage() {
             <label className="block text-gray-700 mb-1">Confirm Password</label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? "text" : "password"} // Toggle for confirm password visibility
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 {...register("confirmPassword", {
@@ -250,6 +252,9 @@ function RegisterPage() {
           </div>
         </form>
 
+        {/* Error message */}
+        {errorMessage && <p className="text-red-500 text-center mt-2">{errorMessage}</p>}
+
         {/* Link to go back to login */}
         <div className="mt-4 text-center">
           <span className="text-sm text-gray-700">Already a member?</span>
@@ -263,3 +268,4 @@ function RegisterPage() {
 }
 
 export default RegisterPage;
+

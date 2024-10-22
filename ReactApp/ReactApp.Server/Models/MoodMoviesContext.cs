@@ -64,6 +64,8 @@ public partial class MoodMoviesContext : DbContext
 
             entity.HasIndex(e => e.Email, "IX_User_Email").IsUnique();
 
+            entity.HasIndex(e => e.UserName, "IX_User_UserName").IsUnique();
+
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Bio).HasColumnName("BIO");
             entity.Property(e => e.Dob)
