@@ -13,11 +13,9 @@ public partial class User
 
     public string? FullName { get; set; }
 
-    public DateOnly? Dob { get; set; }
+    public DateTime? Dob { get; set; }
 
     public string? Email { get; set; }
-
-    public string? ProfileImg { get; set; }
 
     public string? Bio { get; set; }
 

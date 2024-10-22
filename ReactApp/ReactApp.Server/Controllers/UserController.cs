@@ -17,7 +17,25 @@ namespace ReactApp.Server.Controllers
             _mediator = mediator;
         }
 
-        // Login method (Already existing)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterUser request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _mediator.Send(request);
+                return Ok(result); // Return user details upon successful registration
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLogin request)
         {

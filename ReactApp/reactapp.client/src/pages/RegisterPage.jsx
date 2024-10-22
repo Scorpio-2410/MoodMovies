@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-export default function RegisterPage() {
+function RegisterPage() {
   const {
     register,
     handleSubmit,
@@ -12,20 +12,44 @@ export default function RegisterPage() {
     mode: "onSubmit", // Validate form only on submit
     reValidateMode: "onChange", // Revalidate fields when their value changes
   });
+
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Add a state for confirm password visibility
   const [passwordStrength, setPasswordStrength] = useState(0); // Keep track of password strength
   const [emoji, setEmoji] = useState("😡"); // Set initial emoji to angry
   const navigate = useNavigate();
   const password = watch("password");
 
-  const onSubmit = (data) => {
-    console.log("Signup Data: ", data);
-    // Simulate user creation by logging the form data
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch("api/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to register");
+      }
+
+      // If registration is successful, navigate to the login page
+      navigate("/login");
+    } catch (error) {
+      console.error("Error registering user: ", error);
+    }
   };
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  // Toggle confirm password visibility
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   // Validate password and calculate strength
@@ -182,19 +206,38 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Confirm Password */}
+          {/* Confirm Password with eye button */}
           <div>
             <label className="block text-gray-700 mb-1">Confirm Password</label>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              {...register("confirmPassword", {
-                required: "Please confirm your password",
-                validate: (value) => value === password || "Passwords do not match",
-              })}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"} // Toggle for confirm password visibility
+                placeholder="Confirm Password"
+                className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                {...register("confirmPassword", {
+                  required: "Please confirm your password",
+                  validate: (value) => value === password || "Passwords do not match",
+                })}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-3 flex items-center"
+                onClick={toggleConfirmPasswordVisibility}
+              >
+                {showConfirmPassword ? "🤐" : "🧐"}
+              </button>
+            </div>
             {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword.message}</span>}
+          </div>
+
+          {/* Bio */}
+          <div>
+            <label className="block text-gray-700 mb-1">Bio (Optional)</label>
+            <textarea
+              placeholder="Tell us about yourself"
+              className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              {...register("bio")}
+            />
           </div>
 
           {/* Submit button */}
@@ -202,7 +245,7 @@ export default function RegisterPage() {
             <input
               type="submit"
               value="Sign Up"
-              className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer"
+              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
             />
           </div>
         </form>
@@ -219,5 +262,4 @@ export default function RegisterPage() {
   );
 }
 
-
-
+export default RegisterPage;

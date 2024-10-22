@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "lKwo/zFrAjTSWxJjY7IWuFIKJIgjX6aLTjudZTn/mg74e8Kx18PtDeqCsvsw+wl+rLrbZg8dz1d+yO5bAzny4w==",
+  "dgSpecHash": "W6b0cDpBr04=",
   "success": true,
   "projectFilePath": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/ReactApp.Server.csproj",
   "expectedPackageFiles": [
+    "/Users/nabidulislam/.nuget/packages/bcrypt.net-next/4.0.2/bcrypt.net-next.4.0.2.nupkg.sha512",
     "/Users/nabidulislam/.nuget/packages/fluentvalidation/11.10.0/fluentvalidation.11.10.0.nupkg.sha512",
     "/Users/nabidulislam/.nuget/packages/fluentvalidation.aspnetcore/11.3.0/fluentvalidation.aspnetcore.11.3.0.nupkg.sha512",
     "/Users/nabidulislam/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.5.1/fluentvalidation.dependencyinjectionextensions.11.5.1.nupkg.sha512",

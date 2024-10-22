@@ -9,7 +9,7 @@ namespace ReactApp.Server.Features.Users
     {
         public string UserName { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public DateOnly Dob { get; set; }
+        public DateTime Dob { get; set; }
     }
 
     public class VerifyUserDetailsResponse

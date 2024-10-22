@@ -182,3 +182,4 @@ C:/Users/Tale/source/repos/AfizM/App-Dev-Assignment-2/ReactApp/ReactApp.Server/o
 /Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/bin/Debug/net8.0/Newtonsoft.Json.Bson.dll
 /Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/bin/Debug/net8.0/Scrutor.dll
+/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/bin/Debug/net8.0/BCrypt.Net-Next.dll

@@ -4,11 +4,11 @@ CREATE TABLE User (
     UserName VARCHAR(255) NOT NULL,            -- Username
     UserPassword VARCHAR(255) NOT NULL,        -- Password
     FullName TEXT,                             -- Full name
-    DOB DATE,                                  -- Date of Birth
+    DOB DATETIME,                                  -- Date of Birth
     Email VARCHAR(255) UNIQUE,                 -- Unique Email
-    ProfileIMG TEXT,                           -- Profile image (as text or URL)
     BIO TEXT                                   -- Bio
 );
+
 CREATE TABLE MyMovieList (
     MyListID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Primary Key
     UserID INTEGER,                              -- Foreign Key to User(UserID)
@@ -25,9 +25,8 @@ CREATE TABLE Social (
     MovieID INTEGER,                          -- Foreign Key reference to an API Movie ID
     Description VARCHAR(255),                 -- Description of the post
     Title VARCHAR(255),                       -- Title of the post
-    DateTime DATETIME,                        -- Date and time of the post
+    DateTime DATE,                        -- Date and time of the post
     Comments TEXT,                            -- Comments on the post
     NumberOfLikes INTEGER,                    
     FOREIGN KEY (UserID) REFERENCES User(UserID) -- Foreign Key relationship
 );
-

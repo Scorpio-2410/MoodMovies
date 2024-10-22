@@ -67,10 +67,9 @@ public partial class MoodMoviesContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Bio).HasColumnName("BIO");
             entity.Property(e => e.Dob)
-                .HasColumnType("DATE")
+                .HasColumnType("DATETIME")
                 .HasColumnName("DOB");
             entity.Property(e => e.Email).HasColumnType("VARCHAR(255)");
-            entity.Property(e => e.ProfileImg).HasColumnName("ProfileIMG");
             entity.Property(e => e.UserName).HasColumnType("VARCHAR(255)");
             entity.Property(e => e.UserPassword).HasColumnType("VARCHAR(255)");
         });
