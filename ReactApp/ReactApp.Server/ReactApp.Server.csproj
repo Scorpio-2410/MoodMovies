@@ -37,20 +37,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Mood_Moives_SQLDB\" />
     <None Remove="Features\" />
     <None Remove="Features\Users\" />
     <None Remove="mood_movies.db" />
     <None Remove="Infrastructure\" />
     <None Remove="Infrastructure\Validations\" />
     <None Remove="Infrastructure\Middlewares\" />
+    <None Remove="DBChanges\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Mood_Moives_SQLDB\" />
     <Folder Include="Features\" />
     <Folder Include="Features\Users\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Infrastructure\Validations\" />
     <Folder Include="Infrastructure\Middlewares\" />
+    <Folder Include="DBChanges\" />
   </ItemGroup>
 </Project>
