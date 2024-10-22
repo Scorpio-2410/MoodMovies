@@ -6,6 +6,7 @@ const moods = [
   { name: 'Sad', emoji: '😢', bgColor: 'bg-blue-300', textColor: 'text-blue-900' },
   { name: 'Love', emoji: '❤️', bgColor: 'bg-red-300', textColor: 'text-red-900' },
   { name: 'Anger', emoji: '😡', bgColor: 'bg-orange-400', textColor: 'text-orange-900' },
+  { name: 'Scared', emoji: '😨', bgColor: 'bg-purple-300', textColor: 'text-purple-900' },
   { name: 'Adventurous', emoji: '🏔️', bgColor: 'bg-gray-300', textColor: 'text-gray-900' },
 ];
 
