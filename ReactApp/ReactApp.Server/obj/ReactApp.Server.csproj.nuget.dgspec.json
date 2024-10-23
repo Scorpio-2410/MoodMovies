@@ -94,11 +94,11 @@
             },
             "NUnit": {
               "target": "Package",
-              "version": "[4.2.2, )"
+              "version": "[3.14.0, )"
             },
             "NUnit3TestAdapter": {
               "target": "Package",
-              "version": "[4.6.0, )"
+              "version": "[4.5.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
