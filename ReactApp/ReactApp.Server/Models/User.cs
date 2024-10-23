@@ -19,7 +19,7 @@ public partial class User
 
     public string? Bio { get; set; }
 
-    public virtual ICollection<MyMovieList> MyMovieLists { get; set; } = new List<MyMovieList>();
+    public virtual ICollection<MovieListEntry> MovieListEntries { get; set; } = new List<MovieListEntry>();
 
     public virtual ICollection<Social> Socials { get; set; } = new List<Social>();
 }

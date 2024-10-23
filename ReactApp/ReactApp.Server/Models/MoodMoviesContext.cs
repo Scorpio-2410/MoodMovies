@@ -15,7 +15,7 @@ public partial class MoodMoviesContext : DbContext
     {
     }
 
-    public virtual DbSet<MyMovieList> MyMovieLists { get; set; }
+    public virtual DbSet<MovieListEntry> MovieListEntries { get; set; }
 
     public virtual DbSet<Social> Socials { get; set; }
 
@@ -27,19 +27,19 @@ public partial class MoodMoviesContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MyMovieList>(entity =>
+        modelBuilder.Entity<MovieListEntry>(entity =>
         {
-            entity.HasKey(e => e.MyListId);
+            entity.HasKey(e => e.EntryId);
 
-            entity.ToTable("MyMovieList");
+            entity.ToTable("MovieListEntry");
 
-            entity.Property(e => e.MyListId).HasColumnName("MyListID");
-            entity.Property(e => e.IsFavourite).HasColumnType("BOOLEAN");
-            entity.Property(e => e.MovieId).HasColumnName("MovieID");
-            entity.Property(e => e.UserId).HasColumnName("UserID");
-            entity.Property(e => e.WatchStatus).HasColumnType("BOOLEAN");
+            entity.Property(e => e.DateAdded).HasColumnType("DATETIME");
+            entity.Property(e => e.IsFavorite).HasColumnType("BOOLEAN");
+            entity.Property(e => e.MovieGenre).HasColumnType("VARCHAR(255)");
+            entity.Property(e => e.MovieTitle).HasColumnType("VARCHAR(255)");
+            entity.Property(e => e.Status).HasColumnType("VARCHAR(50)");
 
-            entity.HasOne(d => d.User).WithMany(p => p.MyMovieLists).HasForeignKey(d => d.UserId);
+            entity.HasOne(d => d.User).WithMany(p => p.MovieListEntries).HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<Social>(entity =>
