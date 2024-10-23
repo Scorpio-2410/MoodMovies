@@ -1,23 +1,17 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage({ setIsLoggedIn }) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    // Clear previous error messages
     setErrorMessage('');
 
     try {
-      // Send login request to the backend
       const response = await fetch('/api/user/login', {
         method: 'POST',
         headers: {
@@ -44,7 +38,6 @@ export default function LoginPage({ setIsLoggedIn }) {
       // Navigate to the /home page on successful login
       navigate('/home');
     } catch (error) {
-      // Set error message for failed login
       setErrorMessage('Invalid username or password');
       console.error('Error during login: ', error);
     }
@@ -55,19 +48,12 @@ export default function LoginPage({ setIsLoggedIn }) {
     setShowPassword(!showPassword);
   };
 
-  const handleSignupClick = () => {
-    navigate("/register");
-  };
-
-  const handleForgotPasswordClick = () => {
-    navigate("/forgot-password"); // Redirect to Forgot Password page
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
 
+        {/* Display error message */}
         {errorMessage && (
           <div className="text-red-500 text-center mb-4">
             {errorMessage}
@@ -87,7 +73,7 @@ export default function LoginPage({ setIsLoggedIn }) {
             {errors.username && <span className="text-red-500">{errors.username.message}</span>}
           </div>
 
-          {/* Password field with eye button */}
+          {/* Password field with eye toggle button */}
           <div>
             <label className="block text-gray-700 mb-1">Password</label>
             <div className="relative">
@@ -110,27 +96,32 @@ export default function LoginPage({ setIsLoggedIn }) {
 
           {/* Submit button */}
           <div>
-            <input
+            <button
               type="submit"
-              value="Login"
               className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
-            />
+            >
+              Login
+            </button>
           </div>
         </form>
 
-        {/* Forgot Password and Sign Up Links */}
+        {/* Forgot Password link */}
         <div className="mt-4 text-center">
           <button
-            onClick={handleForgotPasswordClick}
+            onClick={() => navigate("/forgot-password")}
             className="text-sm text-indigo-600 hover:underline"
           >
             Forgot Password?
           </button>
         </div>
 
+        {/* Sign Up link */}
         <div className="mt-2 text-center">
           <span className="text-sm text-gray-700">Don't have an account?</span>
-          <button onClick={handleSignupClick} className="ml-1 text-sm text-indigo-600 hover:underline">
+          <button
+            onClick={() => navigate("/register")}
+            className="ml-1 text-sm text-indigo-600 hover:underline"
+          >
             Sign Up
           </button>
         </div>

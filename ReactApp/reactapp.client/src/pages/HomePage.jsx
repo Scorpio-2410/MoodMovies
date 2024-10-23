@@ -7,14 +7,14 @@ import axios from "axios";
 // TMDB API key
 const TMDB_API_KEY = 'f25f87cdd05107e089c4834ff8903582'; // Replace this with your TMDB API key
 
-// Predefined moods and genres (Swapped Scared and Adventurous positions)
+// Predefined moods and genres
 const predefinedMoods = [
   { name: 'Happy', emoji: '😊', genre: 35, bgColor: 'bg-yellow-300', textColor: 'text-yellow-900' },  // Comedy
   { name: 'Sad', emoji: '😢', genre: 18, bgColor: 'bg-blue-300', textColor: 'text-blue-900' },        // Drama
   { name: 'Love', emoji: '❤️', genre: 10749, bgColor: 'bg-red-300', textColor: 'text-red-900' },     // Romance
   { name: 'Anger', emoji: '😡', genre: 28, bgColor: 'bg-orange-400', textColor: 'text-orange-900' },  // Action
-  { name: 'Scared', emoji: '😨', genre: 27, bgColor: 'bg-purple-300', textColor: 'text-purple-900' }, // Horror (Now before Adventurous)
-  { name: 'Adventurous', emoji: '🏔️', genre: 12, bgColor: 'bg-gray-300', textColor: 'text-gray-900' }, // Adventure (Now after Scared)
+  { name: 'Scared', emoji: '😨', genre: 27, bgColor: 'bg-purple-300', textColor: 'text-purple-900' }, // Horror
+  { name: 'Adventurous', emoji: '🏔️', genre: 12, bgColor: 'bg-gray-300', textColor: 'text-gray-900' }, // Adventure
 ];
 
 // Function to fetch movies based on the selected mood's genre
@@ -65,13 +65,13 @@ const HomePage = () => {
         {predefinedMoods.map((mood) => (
           <div
             key={mood.name}
-            className={`p-4 rounded-lg border shadow-md cursor-pointer flex flex-col items-center justify-center transition-all duration-200
+            className={`w-32 h-32 p-4 rounded-lg border shadow-md cursor-pointer flex flex-col items-center justify-center transition-all duration-200
               ${selectedMood === mood.name ? `bg-opacity-100 ${mood.bgColor}` : `bg-opacity-50 ${mood.bgColor}`}
               ${mood.textColor}`}
             onClick={() => handleMoodSelect(mood)}
           >
             <span className="text-5xl mb-2">{mood.emoji}</span>
-            <span className="font-semibold">{mood.name}</span>
+            <span className="font-semibold text-center">{mood.name}</span>
           </div>
         ))}
       </div>

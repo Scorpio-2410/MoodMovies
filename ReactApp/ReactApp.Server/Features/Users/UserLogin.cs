@@ -2,7 +2,10 @@
 using FluentValidation;
 using ReactApp.Server.Models;
 using Microsoft.EntityFrameworkCore;
-
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ReactApp.Server.Features.Users
 {
@@ -15,6 +18,7 @@ namespace ReactApp.Server.Features.Users
     public class UserLoginResponse
     {
         public int UserId { get; set; }
+        public string Token { get; set; } = null!;  // JWT Token to be returned
     }
 
     public class UserLoginValidator : AbstractValidator<UserLogin>
@@ -34,10 +38,12 @@ namespace ReactApp.Server.Features.Users
     public class UserLoginHandler : IRequestHandler<UserLogin, UserLoginResponse>
     {
         private readonly MoodMoviesContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UserLoginHandler(MoodMoviesContext context)
+        public UserLoginHandler(MoodMoviesContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<UserLoginResponse> Handle(UserLogin request, CancellationToken cancellationToken)
@@ -58,10 +64,25 @@ namespace ReactApp.Server.Features.Users
                 throw new ValidationException("Invalid username or password.");
             }
 
-            // If credentials are valid, return the UserId
+            // JWT Token Generation
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);  // Fetch secret key from config
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("UserId", user.UserId.ToString()) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                Audience = _configuration["Jwt:Audience"],  // Set audience in token
+                Issuer = _configuration["Jwt:Issuer"],  // Set issuer in token
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            // Return UserId and Token in response
             return new UserLoginResponse
             {
-                UserId = user.UserId
+                UserId = user.UserId,
+                Token = tokenString  // Return the generated token
             };
         }
     }

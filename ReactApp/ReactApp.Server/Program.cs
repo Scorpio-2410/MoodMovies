@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using ReactApp.Server.Models;
 using MediatR;
 using FluentValidation;
-using ReactApp.Server.Infrastructure.Middlewares;  
-using ReactApp.Server.Infrastructure.Validations; 
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ReactApp.Server
@@ -14,36 +15,45 @@ namespace ReactApp.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllers().AddNewtonsoftJson();  // Enable Newtonsoft.Json
+            builder.Services.AddControllers().AddNewtonsoftJson();
+
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
-                options.SuppressInferBindingSourcesForParameters = true; 
+                options.SuppressInferBindingSourcesForParameters = true;
             });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Configure database context with SQLite
             builder.Services.AddDbContext<MoodMoviesContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Register MediatR for handling commands and queries
             builder.Services.AddMediatR(typeof(Program).Assembly);
 
-            // Register FluentValidation and the validation pipeline
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-            builder.Services.Decorate(typeof(IRequestHandler<,>), typeof(FluentValidationPipeline<,>));
 
-            // You can add any other application-specific services here if needed
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],  // Add Audience check
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                };
+            });
 
-            // Build the application
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -52,19 +62,13 @@ namespace ReactApp.Server
 
             app.UseHttpsRedirection();
 
-            // Authorization middleware
+            app.UseAuthentication();  // Use authentication before authorization
+
             app.UseAuthorization();
 
-            // Register middleware (add any custom middleware like error handling)
-            app.UseMiddleware<ErrorHandlingMiddleware>();  // Assuming you have an error handling middleware
-
-            // Map controllers
             app.MapControllers();
-
-            app.MapFallbackToFile("/index.html");
 
             app.Run();
         }
     }
 }
-

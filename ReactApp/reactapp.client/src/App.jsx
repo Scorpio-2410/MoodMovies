@@ -1,27 +1,29 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage.jsx";
-import WeatherPage from "./pages/WeatherPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import IndexPage from "./pages/IndexPage"; 
 import ForgotPasswordPage from "./pages/ForgotPasswordPage"; 
-import NotFoundPage from "./pages/NotFoundPage"; // Import NotFoundPage
+import NotFoundPage from "./pages/NotFoundPage"; 
+import MyListPage from "./pages/MyListPage";
+import SocialsPage from "./pages/SocialsPage";
+import UpdateProfilePage from "./pages/UpdateProfilePage"; 
 import { useState, useEffect } from "react";
 import { Toaster } from "sonner";
 import PrivateRoute from "./components/PrivateRoute";
-import PublicRoute from "./components/PublicRoute"; // Import PublicRoute
+import PublicRoute from "./components/PublicRoute"; 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
     }
-    setIsLoading(false); // Set loading to false once the check is complete
+    setIsLoading(false);
   }, []);
 
   const handleLogout = () => {
@@ -30,7 +32,6 @@ function App() {
   };
 
   if (isLoading) {
-    // While loading, show a spinner or placeholder to avoid flickering
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
@@ -39,7 +40,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         <Routes>
-          {/* Public Route for IndexPage, redirect to /home if logged in */}
+          {/* Public Route for IndexPage */}
           <Route
             path="/"
             element={
@@ -49,7 +50,7 @@ function App() {
             }
           />
 
-          {/* Public Routes - Redirect logged-in users to home */}
+          {/* Public Routes */}
           <Route
             path="/login"
             element={
@@ -75,7 +76,7 @@ function App() {
             }
           />
 
-          {/* Private Routes - Only accessible when logged in */}
+          {/* Private Routes */}
           <Route
             path="/home"
             element={
@@ -85,10 +86,26 @@ function App() {
             }
           />
           <Route
-            path="/weather"
+            path="/my-list"
             element={
               <PrivateRoute isLoggedIn={isLoggedIn}>
-                <WeatherPage />
+                <MyListPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/social"
+            element={
+              <PrivateRoute isLoggedIn={isLoggedIn}>
+                <SocialsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/update-profile"
+            element={
+              <PrivateRoute isLoggedIn={isLoggedIn}>
+                <UpdateProfilePage />
               </PrivateRoute>
             }
           />
@@ -103,4 +120,3 @@ function App() {
 }
 
 export default App;
-
