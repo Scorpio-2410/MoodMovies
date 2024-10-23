@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj": {}
+    "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj": {
+    "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj",
+        "projectUniqueName": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj",
         "projectName": "ReactApp.Server",
-        "projectPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj",
-        "packagesPath": "C:\\Users\\Nabid\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\obj\\",
+        "projectPath": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj",
+        "packagesPath": "C:\\Users\\Tale\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Nabid\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Tale\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -136,21 +140,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj": {
+    "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
+        "projectUniqueName": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
         "projectName": "ReactServerTest",
-        "projectPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
-        "packagesPath": "C:\\Users\\Nabid\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\obj\\",
+        "projectPath": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
+        "packagesPath": "C:\\Users\\Tale\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Nabid\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Tale\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -165,8 +173,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj": {
-                "projectPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj"
+              "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj": {
+                "projectPath": "C:\\Users\\Tale\\source\\repos\\AfizM\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj"
               }
             }
           }
@@ -231,7 +239,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

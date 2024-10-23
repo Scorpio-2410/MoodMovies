@@ -5,23 +5,59 @@ import { toast } from "sonner";
 import axios from "axios";
 
 // TMDB API key
-const TMDB_API_KEY = 'f25f87cdd05107e089c4834ff8903582'; // Replace this with your TMDB API key
+const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582"; // Replace this with your TMDB API key
 
 // Predefined moods and genres
 const predefinedMoods = [
-  { name: 'Happy', emoji: '😊', genre: 35, bgColor: 'bg-yellow-300', textColor: 'text-yellow-900' },  // Comedy
-  { name: 'Sad', emoji: '😢', genre: 18, bgColor: 'bg-blue-300', textColor: 'text-blue-900' },        // Drama
-  { name: 'Love', emoji: '❤️', genre: 10749, bgColor: 'bg-red-300', textColor: 'text-red-900' },     // Romance
-  { name: 'Anger', emoji: '😡', genre: 28, bgColor: 'bg-orange-400', textColor: 'text-orange-900' },  // Action
-  { name: 'Scared', emoji: '😨', genre: 27, bgColor: 'bg-purple-300', textColor: 'text-purple-900' }, // Horror
-  { name: 'Adventurous', emoji: '🏔️', genre: 12, bgColor: 'bg-gray-300', textColor: 'text-gray-900' }, // Adventure
+  {
+    name: "Happy",
+    emoji: "😊",
+    genre: 35,
+    bgColor: "bg-yellow-300",
+    textColor: "text-yellow-900",
+  }, // Comedy
+  {
+    name: "Sad",
+    emoji: "😢",
+    genre: 18,
+    bgColor: "bg-blue-300",
+    textColor: "text-blue-900",
+  }, // Drama
+  {
+    name: "Love",
+    emoji: "❤️",
+    genre: 10749,
+    bgColor: "bg-red-300",
+    textColor: "text-red-900",
+  }, // Romance
+  {
+    name: "Anger",
+    emoji: "😡",
+    genre: 28,
+    bgColor: "bg-orange-400",
+    textColor: "text-orange-900",
+  }, // Action
+  {
+    name: "Scared",
+    emoji: "😨",
+    genre: 27,
+    bgColor: "bg-purple-300",
+    textColor: "text-purple-900",
+  }, // Horror
+  {
+    name: "Adventurous",
+    emoji: "🏔️",
+    genre: 12,
+    bgColor: "bg-gray-300",
+    textColor: "text-gray-900",
+  }, // Adventure
 ];
 
 // Function to fetch movies based on the selected mood's genre
 const fetchMoviesByMood = async (genreId, pageNum = 1) => {
   try {
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&page=${pageNum}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&page=${pageNum}`,
     );
     return response.data.results.slice(0, 4); // Return top 4 movies
   } catch (error) {
@@ -47,7 +83,9 @@ const HomePage = () => {
   };
 
   const refreshMovies = async () => {
-    const selectedGenre = predefinedMoods.find((m) => m.name === selectedMood).genre;
+    const selectedGenre = predefinedMoods.find(
+      (m) => m.name === selectedMood,
+    ).genre;
     const newPage = page + 1; // Fetch next page of movies
     setPage(newPage);
     setLoading(true); // Show loading indicator
@@ -66,7 +104,11 @@ const HomePage = () => {
           <div
             key={mood.name}
             className={`w-32 h-32 p-4 rounded-lg border shadow-md cursor-pointer flex flex-col items-center justify-center transition-all duration-200
-              ${selectedMood === mood.name ? `bg-opacity-100 ${mood.bgColor}` : `bg-opacity-50 ${mood.bgColor}`}
+              ${
+                selectedMood === mood.name
+                  ? `bg-opacity-100 ${mood.bgColor}`
+                  : `bg-opacity-50 ${mood.bgColor}`
+              }
               ${mood.textColor}`}
             onClick={() => handleMoodSelect(mood)}
           >
@@ -78,7 +120,9 @@ const HomePage = () => {
 
       {/* No mood selected message */}
       {!selectedMood && !loading && (
-        <p className="text-center text-gray-500">Please select a mood to be recommended movies.</p>
+        <p className="text-center text-gray-500">
+          Please select a mood to be recommended movies.
+        </p>
       )}
 
       {/* Loading indicator */}
@@ -89,9 +133,14 @@ const HomePage = () => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">
-              Recommended Movies for {selectedMood} {predefinedMoods.find((m) => m.name === selectedMood).emoji}
+              Recommended Movies for {selectedMood}{" "}
+              {predefinedMoods.find((m) => m.name === selectedMood).emoji}
             </h2>
-            <Button variant="outline" onClick={refreshMovies} className="flex items-center">
+            <Button
+              variant="outline"
+              onClick={refreshMovies}
+              className="flex items-center"
+            >
               <span className="mr-1">🔄</span>
               Refresh
             </Button>
@@ -103,7 +152,12 @@ const HomePage = () => {
               <Card
                 key={movie.id}
                 className="cursor-pointer relative overflow-hidden"
-                onClick={() => window.open(`https://www.themoviedb.org/movie/${movie.id}`, "_blank")}
+                onClick={() =>
+                  window.open(
+                    `https://www.themoviedb.org/movie/${movie.id}`,
+                    "_blank",
+                  )
+                }
               >
                 <CardContent className="p-0">
                   <img
@@ -112,10 +166,28 @@ const HomePage = () => {
                     className="w-full h-96"
                   />
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 truncate">{movie.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-3">{movie.overview}</p>
+                    <h3 className="font-semibold text-lg mb-2 truncate">
+                      {movie.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-3">
+                      {movie.overview}
+                    </p>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-yellow-500">★ {movie.vote_average.toFixed(1)}</span>
+                      <span className="text-sm text-yellow-400">
+                        ⭐ {movie.vote_average.toFixed(1)}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-300"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Add to list functionality here
+                          console.log(`Add ${movie.title} to list`);
+                        }}
+                      >
+                        Add to List
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -127,7 +199,9 @@ const HomePage = () => {
 
       {/* No recommendations */}
       {!loading && recommendations.length === 0 && selectedMood && (
-        <p className="text-center text-gray-500">No recommendations available for this mood. Please try again.</p>
+        <p className="text-center text-gray-500">
+          No recommendations available for this mood. Please try again.
+        </p>
       )}
     </div>
   );

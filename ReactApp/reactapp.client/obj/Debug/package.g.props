@@ -11,6 +11,8 @@
     <PackageJsonScriptsPreview Condition="$(PackageJsonScriptsPreview) == ''">vite preview</PackageJsonScriptsPreview>
     <PackageJsonDependenciesRadixUiReactDialog Condition="$(PackageJsonDependenciesRadixUiReactDialog) == ''">^1.1.2</PackageJsonDependenciesRadixUiReactDialog>
     <PackageJsonDependenciesRadixUiReactIcons Condition="$(PackageJsonDependenciesRadixUiReactIcons) == ''">^1.3.0</PackageJsonDependenciesRadixUiReactIcons>
+    <PackageJsonDependenciesRadixUiReactSelect Condition="$(PackageJsonDependenciesRadixUiReactSelect) == ''">^2.1.2</PackageJsonDependenciesRadixUiReactSelect>
+    <PackageJsonDependenciesRadixUiReactSlider Condition="$(PackageJsonDependenciesRadixUiReactSlider) == ''">^1.2.1</PackageJsonDependenciesRadixUiReactSlider>
     <PackageJsonDependenciesRadixUiReactSlot Condition="$(PackageJsonDependenciesRadixUiReactSlot) == ''">^1.1.0</PackageJsonDependenciesRadixUiReactSlot>
     <PackageJsonDependenciesAxios Condition="$(PackageJsonDependenciesAxios) == ''">^1.7.7</PackageJsonDependenciesAxios>
     <PackageJsonDependenciesClassVarianceAuthority Condition="$(PackageJsonDependenciesClassVarianceAuthority) == ''">^0.7.0</PackageJsonDependenciesClassVarianceAuthority>
