@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp.Server.Features.Users
 {
+    // Interface for user updating operations
+    public interface IUpdateUserService
+    {
+        Task<UpdateUserResponse> UpdateUserAsync(UpdateUser request, CancellationToken cancellationToken);
+    }
+
     // UpdateUser request and response classes
     public class UpdateUser : IRequest<UpdateUserResponse>
     {
@@ -35,8 +41,8 @@ namespace ReactApp.Server.Features.Users
         }
     }
 
-    // Handler for UpdateUser request
-    public class UpdateUserHandler : IRequestHandler<UpdateUser, UpdateUserResponse>
+    // Handler for UpdateUser request implementing the IUpdateUserService interface
+    public class UpdateUserHandler : IRequestHandler<UpdateUser, UpdateUserResponse>, IUpdateUserService
     {
         private readonly MoodMoviesContext _context;
 
@@ -45,26 +51,44 @@ namespace ReactApp.Server.Features.Users
             _context = context;
         }
 
+        // Implementation of the UpdateUserAsync method from the IUpdateUserService interface
         public async Task<UpdateUserResponse> Handle(UpdateUser request, CancellationToken cancellationToken)
         {
+            return await UpdateUserAsync(request, cancellationToken);
+        }
+
+        public async Task<UpdateUserResponse> UpdateUserAsync(UpdateUser request, CancellationToken cancellationToken)
+        {
+            // LINQ query using an anonymous method with a lambda expression
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+                .Where(u => u.UserId == request.UserId)
+                .Select(u => new { u.UserId, u.Bio, u.UserPassword })  // Anonymous projection of only required fields
+                .FirstOrDefaultAsync();
 
             if (user == null)
             {
                 throw new ValidationException("User not found.");
             }
 
+            // Fetch the actual user entity for updates
+            var userEntity = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+
+            if (userEntity == null)
+            {
+                throw new ValidationException("User entity not found.");
+            }
+
             // Update bio only if provided
             if (!string.IsNullOrEmpty(request.Bio))
             {
-                user.Bio = request.Bio;
+                userEntity.Bio = request.Bio;
             }
 
             // Update password only if a new one is provided
             if (!string.IsNullOrEmpty(request.NewPassword))
             {
-                user.UserPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                userEntity.UserPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -73,4 +97,3 @@ namespace ReactApp.Server.Features.Users
         }
     }
 }
-

@@ -10,6 +10,13 @@ const UpdateProfilePage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [emoji, setEmoji] = useState("😡");
+  const [submitted, setSubmitted] = useState(false); // Track if form is submitted
+  const [validationErrors, setValidationErrors] = useState({
+    minLength: false,
+    hasUppercase: false,
+    hasNumber: false,
+    hasSpecialChar: false
+  });
 
   const [userData, setUserData] = useState({
     userId: "",
@@ -21,21 +28,23 @@ const UpdateProfilePage = () => {
   });
 
   const password = watch("newPassword");
+  const confirmPassword = watch("confirmPassword");
 
   // Fetch user data and populate form
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get("/api/user/profile-fetch", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setUserData(response.data);
+      reset(response.data);  // Populate form with the fetched user data
+    } catch (error) {
+      console.error("Error fetching user data", error);
+      alert("Failed to fetch user data.");
+    }
+  };
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get("/api/user/profile-fetch", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setUserData(response.data);
-        reset(response.data);  // Populate form with the fetched user data
-      } catch (error) {
-        console.error("Error fetching user data", error);
-        alert.error("Failed to fetch user data.");
-      }
-    };
     fetchUserData();
   }, [reset]);
 
@@ -43,13 +52,39 @@ const UpdateProfilePage = () => {
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-  // Password strength logic
+  // Reset password-related fields if no password is entered
+  useEffect(() => {
+    if (!password) {
+      setPasswordStrength(0);
+      setEmoji("😡");
+      setValidationErrors({
+        minLength: false,
+        hasUppercase: false,
+        hasNumber: false,
+        hasSpecialChar: false
+      });
+    }
+  }, [password]);
+
+  // Password validation logic
   const validatePasswordStrength = (password) => {
+    const hasMinLength = password.length >= 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+    setValidationErrors({
+      minLength: hasMinLength,
+      hasUppercase: hasUppercase,
+      hasNumber: hasNumber,
+      hasSpecialChar: hasSpecialChar
+    });
+
     let strength = 0;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    if (hasMinLength) strength += 1;
+    if (hasUppercase) strength += 1;
+    if (hasNumber) strength += 1;
+    if (hasSpecialChar) strength += 1;
 
     setPasswordStrength(strength);
 
@@ -63,11 +98,20 @@ const UpdateProfilePage = () => {
 
   // Handle form submission for updating profile
   const handleSubmitForm = async (data) => {
-    alert.dismiss(); // Clear any previous toasts
+    setSubmitted(true); // Mark form as submitted
 
-    if (data.newPassword && data.newPassword !== data.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
+    // If a new password is provided, validate the confirm password
+    if (data.newPassword) {
+      if (data.newPassword !== data.confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      // Validate password strength
+      if (!validationErrors.minLength || !validationErrors.hasUppercase || !validationErrors.hasNumber || !validationErrors.hasSpecialChar) {
+        alert("Password does not meet the requirements.");
+        return;
+      }
     }
 
     const bioToSend = data.bio !== userData.bio ? data.bio : null; // Send bio if changed
@@ -88,13 +132,14 @@ const UpdateProfilePage = () => {
       );
 
       if (response.status === 200) {
-        alert.success("Profile updated successfully");
+        alert("Profile updated successfully.");
         reset({ ...userData, newPassword: "", confirmPassword: "" });  // Reset form fields
+        fetchUserData(); // Refetch user data to reflect updates
       }
     } catch (error) {
       console.error("Error updating profile", error);
       if (error.response && error.response.data) {
-        alert.error(error.response.data.message || "Failed to update profile.");
+        alert(error.response.data.message || "Failed to update profile.");
       }
     } finally {
       setLoading(false);
@@ -102,35 +147,30 @@ const UpdateProfilePage = () => {
   };
 
   // Handle user deletion
-    const handleDeleteUser = async () => {
+  const handleDeleteUser = async () => {
     const confirmation = window.confirm(
-        "Are you sure you want to delete your profile? This action cannot be undone."
+      "Are you sure you want to delete your profile? This action cannot be undone."
     );
-        if (confirmation) {
-            try {
-                setIsDeleting(true);
-                
-                // Send the delete request with confirmation
-                await axios.delete("/api/user/profile-delete", {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                    data: { IsConfirmed: true }, // Send the confirmation flag in the request
-                });
+    if (confirmation) {
+      try {
+        setIsDeleting(true);
 
-                // After successful deletion, log the user out
-                localStorage.removeItem("token"); // Remove the token or any session data
-                alert.success("Profile deleted successfully.");
+        await axios.delete("/api/user/profile-delete", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          data: { IsConfirmed: true }, // Send the confirmation flag in the request
+        });
 
-                // Redirect the user to the index page
-                window.location.href = "https://localhost:5173/";
-
-            } catch (error) {
-                console.error("Error deleting profile", error);
-                alert.error(error.response?.data?.message || "Failed to delete profile.");
-            } finally {
-                setIsDeleting(false);
-            }
-        }
-    };
+        localStorage.removeItem("token"); // Remove the token or any session data
+        alert("Profile deleted successfully.");
+        window.location.href = "https://localhost:5173/";
+      } catch (error) {
+        console.error("Error deleting profile", error);
+        alert(error.response?.data?.message || "Failed to delete profile.");
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-8 max-w-md mx-auto mt-8">
@@ -203,6 +243,24 @@ const UpdateProfilePage = () => {
               </button>
             </div>
 
+            {/* Password validation bullet points - only show if a password is being typed */}
+            {password && (
+              <ul className="mt-2 text-sm">
+                <li className={validationErrors.minLength ? "text-green-600" : "text-red-600"}>
+                  Password must be at least 8 characters
+                </li>
+                <li className={validationErrors.hasUppercase ? "text-green-600" : "text-red-600"}>
+                  Password must contain at least one uppercase letter
+                </li>
+                <li className={validationErrors.hasNumber ? "text-green-600" : "text-red-600"}>
+                  Password must contain at least one number
+                </li>
+                <li className={validationErrors.hasSpecialChar ? "text-green-600" : "text-red-600"}>
+                  Password must contain at least one special character
+                </li>
+              </ul>
+            )}
+
             <div className="flex items-center mt-2">
               <div className="w-full bg-gray-200 rounded-full h-2.5 mr-3">
                 <div
@@ -218,19 +276,25 @@ const UpdateProfilePage = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword")}
-                className="block w-full mt-1 px-4 py-2 border rounded-md"
-              />
-              <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute inset-y-0 right-3">
-                {showConfirmPassword ? "🤐" : "🧐"}
-              </button>
+          {/* Only show confirm password if a new password is typed */}
+          {password && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("confirmPassword", {
+                    validate: value => value === password || "Passwords do not match",
+                  })}
+                  className="block w-full mt-1 px-4 py-2 border rounded-md"
+                />
+                <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute inset-y-0 right-3">
+                  {showConfirmPassword ? "🤐" : "🧐"}
+                </button>
+                {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword.message}</span>}
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             type="submit"
@@ -255,5 +319,3 @@ const UpdateProfilePage = () => {
 };
 
 export default UpdateProfilePage;
-
-

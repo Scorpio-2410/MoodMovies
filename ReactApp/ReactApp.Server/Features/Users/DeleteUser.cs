@@ -27,14 +27,45 @@ namespace ReactApp.Server.Features.Users
         }
     }
 
-    // Handler for DeleteUser request
-    public class DeleteUserHandler : IRequestHandler<DeleteUser, DeleteUserResponse>
+    // Generic repository interface for CRUD operations
+    public interface IRepository<T> where T : class
+    {
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task RemoveAsync(T entity, CancellationToken cancellationToken);
+    }
+
+    // Generic repository implementation using Entity Framework Core
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly MoodMoviesContext _context;
+        private readonly DbSet<T> _entities;
 
-        public DeleteUserHandler(MoodMoviesContext context)
+        public Repository(MoodMoviesContext context)
         {
             _context = context;
+            _entities = _context.Set<T>();
+        }
+
+        public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            return await _entities.FindAsync(new object[] { id }, cancellationToken);
+        }
+
+        public async Task RemoveAsync(T entity, CancellationToken cancellationToken)
+        {
+            _entities.Remove(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    // Handler for DeleteUser request using the generic repository
+    public class DeleteUserHandler : IRequestHandler<DeleteUser, DeleteUserResponse>
+    {
+        private readonly IRepository<User> _userRepository;
+
+        public DeleteUserHandler(IRepository<User> userRepository)
+        {
+            _userRepository = userRepository;
         }
 
         public async Task<DeleteUserResponse> Handle(DeleteUser request, CancellationToken cancellationToken)
@@ -45,8 +76,8 @@ namespace ReactApp.Server.Features.Users
                 throw new ValidationException("Deletion not confirmed by the user.");
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+            // LINQ query to fetch user
+            var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
 
             // If user is not found
             if (user == null)
@@ -54,13 +85,13 @@ namespace ReactApp.Server.Features.Users
                 throw new ValidationException("User not found.");
             }
 
-            // Delete the user
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync(cancellationToken);
+            // Delete the user using the generic repository
+            await _userRepository.RemoveAsync(user, cancellationToken);
 
             // Return a successful response
             return new DeleteUserResponse { IsSuccessful = true };
         }
     }
 }
+
 

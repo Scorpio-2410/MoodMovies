@@ -4,6 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp.Server.Features.Users
 {
+    // Interface for retrieving user profiles
+    public interface IUserProfileService
+    {
+        Task<GetUserProfileResponse> GetUserProfileAsync(int userId, CancellationToken cancellationToken);
+    }
+
     // Request class
     public class GetUserProfile : IRequest<GetUserProfileResponse>
     {
@@ -20,8 +26,8 @@ namespace ReactApp.Server.Features.Users
         public string? Bio { get; set; }
     }
 
-    // Handler for GetUserProfile
-    public class GetUserProfileHandler : IRequestHandler<GetUserProfile, GetUserProfileResponse>
+    // Handler implementing the interface and using LINQ
+    public class GetUserProfileHandler : IRequestHandler<GetUserProfile, GetUserProfileResponse>, IUserProfileService
     {
         private readonly MoodMoviesContext _context;
 
@@ -30,26 +36,34 @@ namespace ReactApp.Server.Features.Users
             _context = context;
         }
 
+        // Handle method for MediatR
         public async Task<GetUserProfileResponse> Handle(GetUserProfile request, CancellationToken cancellationToken)
         {
+            return await GetUserProfileAsync(request.UserId, cancellationToken);
+        }
+
+        // Implementation of IUserProfileService method using LINQ
+        public async Task<GetUserProfileResponse> GetUserProfileAsync(int userId, CancellationToken cancellationToken)
+        {
+            // Use LINQ with lambda expression
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == request.UserId, cancellationToken);
+                .Where(u => u.UserId == userId)
+                .Select(u => new GetUserProfileResponse
+                {
+                    UserName = u.UserName,
+                    FullName = u.FullName ?? string.Empty,
+                    Email = u.Email ?? string.Empty,
+                    Dob = u.Dob,
+                    Bio = u.Bio
+                })
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found.");
             }
 
-            return new GetUserProfileResponse
-            {
-                UserName = user.UserName,
-                FullName = user.FullName ?? string.Empty,
-                Email = user.Email ?? string.Empty,
-                Dob = user.Dob,
-                Bio = user.Bio
-            };
+            return user;
         }
     }
 }
-
-

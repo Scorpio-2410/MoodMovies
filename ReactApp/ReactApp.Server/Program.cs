@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using ReactApp.Server.Features.Users;
 
 namespace ReactApp.Server
 {
@@ -32,6 +33,9 @@ namespace ReactApp.Server
 
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+            // Register the generic repository
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -42,7 +46,7 @@ namespace ReactApp.Server
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],  // Add Audience check
+                    ValidAudience = builder.Configuration["Jwt:Audience"],  
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
             });
@@ -62,7 +66,7 @@ namespace ReactApp.Server
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();  // Use authentication before authorization
+            app.UseAuthentication(); 
 
             app.UseAuthorization();
 

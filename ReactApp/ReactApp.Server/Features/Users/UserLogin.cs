@@ -9,18 +9,27 @@ using System.Text;
 
 namespace ReactApp.Server.Features.Users
 {
+    // Base class for polymorphism
+    public abstract class BaseUserHandler
+    {
+        public abstract Task<UserLoginResponse> Handle(UserLogin request, CancellationToken cancellationToken);
+    }
+
+    // Request model for User Login
     public class UserLogin : IRequest<UserLoginResponse>
     {
         public string UserName { get; set; } = null!;
         public string UserPassword { get; set; } = null!;
     }
 
+    // Response model for User Login
     public class UserLoginResponse
     {
         public int UserId { get; set; }
         public string Token { get; set; } = null!;  // JWT Token to be returned
     }
 
+    // Validator for User Login request
     public class UserLoginValidator : AbstractValidator<UserLogin>
     {
         public UserLoginValidator()
@@ -35,7 +44,8 @@ namespace ReactApp.Server.Features.Users
         }
     }
 
-    public class UserLoginHandler : IRequestHandler<UserLogin, UserLoginResponse>
+    // User Login Handler implementing polymorphism by overriding the base class
+    public class UserLoginHandler : BaseUserHandler, IRequestHandler<UserLogin, UserLoginResponse>
     {
         private readonly MoodMoviesContext _context;
         private readonly IConfiguration _configuration;
@@ -46,13 +56,14 @@ namespace ReactApp.Server.Features.Users
             _configuration = configuration;
         }
 
-        public async Task<UserLoginResponse> Handle(UserLogin request, CancellationToken cancellationToken)
+        // Polymorphic method override with LINQ query for user lookup
+        public override async Task<UserLoginResponse> Handle(UserLogin request, CancellationToken cancellationToken)
         {
-            // Check if the user exists in the database
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == request.UserName, cancellationToken);
+            // LINQ for user query
+            var user = await (from u in _context.Users
+                              where u.UserName == request.UserName
+                              select u).FirstOrDefaultAsync(cancellationToken);
 
-            // If user is not found
             if (user == null)
             {
                 throw new ValidationException("Invalid username or password.");
@@ -87,3 +98,4 @@ namespace ReactApp.Server.Features.Users
         }
     }
 }
+
