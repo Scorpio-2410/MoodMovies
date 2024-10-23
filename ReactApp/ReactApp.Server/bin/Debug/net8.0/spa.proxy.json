@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:5173",
 "RedirectUrl": "",
 "LaunchCommand": "npm run dev",
-"WorkingDirectory": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/ReactApp.Server/../reactapp.client",
+"WorkingDirectory": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\..\\reactapp.client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }

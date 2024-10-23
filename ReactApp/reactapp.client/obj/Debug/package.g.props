@@ -36,6 +36,6 @@
     <PackageJsonDevdependenciesGlobals Condition="$(PackageJsonDevdependenciesGlobals) == ''">^15.9.0</PackageJsonDevdependenciesGlobals>
     <PackageJsonDevdependenciesPostcss Condition="$(PackageJsonDevdependenciesPostcss) == ''">^8.4.47</PackageJsonDevdependenciesPostcss>
     <PackageJsonDevdependenciesTailwindcss Condition="$(PackageJsonDevdependenciesTailwindcss) == ''">^3.4.13</PackageJsonDevdependenciesTailwindcss>
-    <PackageJsonDevdependenciesVite Condition="$(PackageJsonDevdependenciesVite) == ''">^5.4.9</PackageJsonDevdependenciesVite>
+    <PackageJsonDevdependenciesVite Condition="$(PackageJsonDevdependenciesVite) == ''">^5.4.10</PackageJsonDevdependenciesVite>
   </PropertyGroup>
 </Project>

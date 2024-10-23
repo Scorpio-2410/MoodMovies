@@ -1,21 +1,21 @@
 {
   "Version": 1,
-  "Hash": "ZZ1Og7T7VW5CbCiIOpnwshO5rQyX/rBqBJ7Uo0zfZzw=",
+  "Hash": "Wu3UUyXmkg+ENLYIVzOj/ZwJWOH9qhZBIIpA+7Gy6v4=",
   "Source": "ReactApp.Server",
   "BasePath": "_content/ReactApp.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2-1/ReactApp/reactapp.client/reactapp.client.esproj",
+      "Identity": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\reactapp.client\\reactapp.client.esproj",
       "Version": 2,
       "Source": "reactapp.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
-      "AdditionalPublishProperties": "",
-      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;Configuration;Platform;TargetFramework;RuntimeIdentifier;SelfContained",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
-      "AdditionalBuildProperties": "",
-      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;Configuration;Platform;TargetFramework;RuntimeIdentifier;SelfContained"
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
     }
   ],
   "DiscoveryPatterns": [],
