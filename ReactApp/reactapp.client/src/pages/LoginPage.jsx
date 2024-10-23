@@ -34,12 +34,13 @@ export default function LoginPage({ setIsLoggedIn }) {
 
       // Set the user as logged in
       setIsLoggedIn(true);
+      alert("Successful login!");
 
       // Navigate to the /home page on successful login
       navigate('/home');
     } catch (error) {
       setErrorMessage('Invalid username or password');
-      console.error('Error during login: ', error);
+      alert.error('Error during login: ', error);
     }
   };
 

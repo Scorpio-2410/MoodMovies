@@ -1,16 +1,36 @@
 import { Link, useLocation } from "react-router-dom";
 import { Film, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Navbar = ({ isLoggedIn, handleLogout }) => {
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false); 
+  const dropdownRef = useRef(null);  // Ref for the dropdown element
 
   const isIndexPage = location.pathname === '/';
 
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
   };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileOpen(false);  // Close dropdown if click is outside of it
+      }
+    };
+
+    if (isProfileOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileOpen]);
 
   return (
     <nav className="bg-primary p-4">
@@ -53,7 +73,7 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
               </Link>
 
               {/* User Profile with dropdown */}
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button onClick={toggleProfileDropdown} className="text-white">
                   <User className="w-6 h-6" />
                 </button>
@@ -62,11 +82,15 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
                     <Link
                       to="/update-profile"
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsProfileOpen(false)} // Close dropdown on click
                     >
                       Update Profile
                     </Link>
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setIsProfileOpen(false); // Close dropdown on logout
+                      }}
                       className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       Logout
@@ -83,3 +107,4 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
 };
 
 export default Navbar;
+

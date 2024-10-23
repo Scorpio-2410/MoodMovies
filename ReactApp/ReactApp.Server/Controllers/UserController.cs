@@ -113,7 +113,7 @@ namespace ReactApp.Server.Controllers
                 var result = await _mediator.Send(request);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -148,7 +148,7 @@ namespace ReactApp.Server.Controllers
 
         // Delete user
         [HttpDelete("profile-delete")]
-        public async Task<IActionResult> DeleteUser()
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUser request)
         {
             try
             {
@@ -158,13 +158,16 @@ namespace ReactApp.Server.Controllers
                     return Unauthorized();
                 }
 
-                var request = new DeleteUser { UserId = int.Parse(userId) };
+                // Assign the UserId from the token to the request
+                request.UserId = int.Parse(userId);
+
+                // Send the request to the handler
                 var result = await _mediator.Send(request);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

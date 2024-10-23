@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const UpdateProfilePage = () => {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
@@ -12,7 +10,6 @@ const UpdateProfilePage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [emoji, setEmoji] = useState("😡");
-  const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
     userId: "",
@@ -36,7 +33,7 @@ const UpdateProfilePage = () => {
         reset(response.data);  // Populate form with the fetched user data
       } catch (error) {
         console.error("Error fetching user data", error);
-        toast.error("Failed to fetch user data.");
+        alert.error("Failed to fetch user data.");
       }
     };
     fetchUserData();
@@ -66,7 +63,7 @@ const UpdateProfilePage = () => {
 
   // Handle form submission for updating profile
   const handleSubmitForm = async (data) => {
-    toast.dismiss(); // Clear any previous toasts
+    alert.dismiss(); // Clear any previous toasts
 
     if (data.newPassword && data.newPassword !== data.confirmPassword) {
       toast.error("Passwords do not match.");
@@ -91,13 +88,13 @@ const UpdateProfilePage = () => {
       );
 
       if (response.status === 200) {
-        toast.success("Profile updated successfully");
+        alert.success("Profile updated successfully");
         reset({ ...userData, newPassword: "", confirmPassword: "" });  // Reset form fields
       }
     } catch (error) {
       console.error("Error updating profile", error);
       if (error.response && error.response.data) {
-        toast.error(error.response.data.message || "Failed to update profile.");
+        alert.error(error.response.data.message || "Failed to update profile.");
       }
     } finally {
       setLoading(false);
@@ -105,26 +102,35 @@ const UpdateProfilePage = () => {
   };
 
   // Handle user deletion
-  const handleDeleteUser = async () => {
+    const handleDeleteUser = async () => {
     const confirmation = window.confirm(
-      "Are you sure you want to delete your profile? This action cannot be undone."
+        "Are you sure you want to delete your profile? This action cannot be undone."
     );
-    if (confirmation) {
-      try {
-        setIsDeleting(true);
-        await axios.delete("/api/user/profile-delete", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        toast.success("Profile deleted successfully.");
-        navigate("/");  // Navigate back to home page after deletion
-      } catch (error) {
-        console.error("Error deleting profile", error);
-        toast.error("Failed to delete profile.");
-      } finally {
-        setIsDeleting(false);
-      }
-    }
-  };
+        if (confirmation) {
+            try {
+                setIsDeleting(true);
+                
+                // Send the delete request with confirmation
+                await axios.delete("/api/user/profile-delete", {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    data: { IsConfirmed: true }, // Send the confirmation flag in the request
+                });
+
+                // After successful deletion, log the user out
+                localStorage.removeItem("token"); // Remove the token or any session data
+                alert.success("Profile deleted successfully.");
+
+                // Redirect the user to the index page
+                window.location.href = "https://localhost:5173/";
+
+            } catch (error) {
+                console.error("Error deleting profile", error);
+                alert.error(error.response?.data?.message || "Failed to delete profile.");
+            } finally {
+                setIsDeleting(false);
+            }
+        }
+    };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-8 max-w-md mx-auto mt-8">

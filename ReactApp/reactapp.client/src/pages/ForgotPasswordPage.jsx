@@ -106,6 +106,7 @@ const ForgotPasswordPage = () => {
       });
 
       if (response.ok) {
+        alert("Password successfully updated!");
         navigate('/login'); // Redirect to login page after successful password reset
       } else {
         setError("newPassword", {
