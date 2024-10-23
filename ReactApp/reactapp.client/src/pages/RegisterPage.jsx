@@ -6,21 +6,27 @@ function RegisterPage() {
   const {
     register,
     handleSubmit,
-    watch, // Import watch to track form values
+    watch,
     formState: { errors }
   } = useForm({
-    mode: "onSubmit", // Validate form only on submit
-    reValidateMode: "onChange", // Revalidate fields when their value changes
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0); // Track password strength
   const [emoji, setEmoji] = useState("😡"); // Set initial emoji to angry
+  const [validationErrors, setValidationErrors] = useState({
+    minLength: false,
+    hasUppercase: false,
+    hasNumber: false,
+    hasSpecialChar: false
+  });
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   
-  const password = watch("password"); // Watch the password input
+  const password = watch("password");
 
   const onSubmit = async (data) => {
     try {
@@ -36,10 +42,7 @@ function RegisterPage() {
         throw new Error('Registration failed');
       }
 
-      // If registration is successful, alert the user
       alert("Registration successful! Please login.");
-      
-      // Navigate to the login page after alerting the user
       navigate("/login");
     } catch (error) {
       setErrorMessage('Username or email already exists.');
@@ -59,24 +62,34 @@ function RegisterPage() {
 
   // Validate password and calculate strength
   const validatePasswordStrength = (password) => {
-    let strength = 0;
+    const hasMinLength = password.length >= 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
 
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    setValidationErrors({
+      minLength: hasMinLength,
+      hasUppercase: hasUppercase,
+      hasNumber: hasNumber,
+      hasSpecialChar: hasSpecialChar
+    });
+
+    let strength = 0;
+    if (hasMinLength) strength += 1;
+    if (hasUppercase) strength += 1;
+    if (hasNumber) strength += 1;
+    if (hasSpecialChar) strength += 1;
 
     setPasswordStrength(strength);
 
-    // Set emoji based on strength
     if (strength === 4) {
-      setEmoji("😁"); // Green with a happy emoji
+      setEmoji("😁");
     } else if (strength === 3) {
-      setEmoji("😐"); // Yellow with neutral emoji
+      setEmoji("😐");
     } else if (strength === 2) {
-      setEmoji("😞"); // Orange with sad emoji
+      setEmoji("😞");
     } else {
-      setEmoji("😡"); // Red with angry emoji
+      setEmoji("😡");
     }
   };
 
@@ -179,14 +192,22 @@ function RegisterPage() {
                 {showPassword ? "🤐" : "🧐"}
               </button>
             </div>
-            {errors.password && (
-              <ul className="text-red-500 mt-2 list-disc list-inside">
-                <li>Password must be at least 8 characters</li>
-                <li>Password must contain at least one uppercase letter</li>
-                <li>Password must contain at least one number</li>
-                <li>Password must contain at least one special character</li>
-              </ul>
-            )}
+
+            {/* Password validation bullet points */}
+            <ul className="mt-2 text-sm">
+              <li className={validationErrors.minLength ? "text-green-600" : "text-red-600"}>
+                Password must be at least 8 characters
+              </li>
+              <li className={validationErrors.hasUppercase ? "text-green-600" : "text-red-600"}>
+                Password must contain at least one uppercase letter
+              </li>
+              <li className={validationErrors.hasNumber ? "text-green-600" : "text-red-600"}>
+                Password must contain at least one number
+              </li>
+              <li className={validationErrors.hasSpecialChar ? "text-green-600" : "text-red-600"}>
+                Password must contain at least one special character
+              </li>
+            </ul>
 
             {/* Password Strength Bar */}
             <div className="flex items-center mt-2">
