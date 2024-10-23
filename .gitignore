@@ -4,3 +4,8 @@
 
 /.vs
 /ReactApp/.vs
+ReactApp/ReactApp.Server/sqlite3_rsync.exe
+ReactApp/ReactApp.Server/sqlite3_analyzer.exe
+ReactApp/ReactApp.Server/sqlite3.exe
+ReactApp/ReactApp.Server/sqldiff.exe
+ReactApp/ReactApp.Server/create_movie_list_entry.sql
