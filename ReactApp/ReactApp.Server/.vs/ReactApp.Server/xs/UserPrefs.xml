@@ -2,36 +2,25 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Features/Users/UserLogin.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Program.cs">
     <Files>
-      <File FileName="Controllers/UserController.cs" Line="37" Column="10" />
-      <File FileName="Program.cs" />
-      <File FileName="Models/MoodMoviesContext.cs" Line="1" Column="1" />
-      <File FileName="Mood_Moives_SQLDB/003 - Added correct data types.sql" Line="1" Column="1" />
-      <File FileName="Models/MyMovieList.cs" />
-      <File FileName="Features/Users/PasswordReset.cs" Line="51" Column="6" />
-      <File FileName="Features/Users/UserLogin.cs" Line="47" Column="7" />
-      <File FileName="Models/User.cs" Line="9" Column="1" />
-      <File FileName="Features/Users/ResetPassword.cs" Line="68" Column="1" />
-      <File FileName="Features/Users/RegisterUser.cs" Line="56" Column="45" />
-      <File FileName="Features/Users/UpdateUser.cs" Line="1" Column="1" />
-      <File FileName="Controllers/WeatherForecastController.cs" Line="1" Column="1" />
-      <File FileName="Models/Social.cs" Line="1" Column="1" />
-      <File FileName="Mood_Moives_SQLDB/004 - Modified MyMovieList.sql" Line="11" Column="3" />
-      <File FileName="Mood_Moives_SQLDB/005 - Modified user table.sql" Line="2" Column="1" />
-      <File FileName="Mood_Moives_SQLDB/001 - Intial_Test_DB.sql" Line="1" Column="1" />
+      <File FileName="Features/Users/GetUserProfile.cs" Line="3" Column="37" />
+      <File FileName="Program.cs" Line="69" Column="38" />
+      <File FileName="Models/MoodMoviesContext.cs" Line="25" Column="10" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="ReactApp.Server">
-            <Node name="ReactApp.Server">
+          <Node name="ReactApp.Server" expanded="True">
+            <Node name="ReactApp.Server" expanded="True">
+              <Node name="Dependencies" expanded="True" />
               <Node name="Controllers" expanded="True" />
-              <Node name="DBChanges" expanded="True" />
               <Node name="Features" expanded="True">
                 <Node name="Users" expanded="True" />
               </Node>
               <Node name="Models" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="appsettings.json" expanded="True" />
             </Node>
           </Node>
         </State>
