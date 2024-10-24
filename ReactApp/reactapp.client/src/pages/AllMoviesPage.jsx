@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 
 // TMDB API key
-const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582"; // Replace this with your TMDB API key
+const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582";
 
 const AllMoviesPage = () => {
   const [movies, setMovies] = useState([]);

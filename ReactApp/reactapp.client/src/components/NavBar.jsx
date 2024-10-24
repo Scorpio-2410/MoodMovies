@@ -66,6 +66,12 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
                 Home
               </Link>
               <Link
+                to="/all-movies"
+                className="text-white hover:text-gray-200 transition-colors"
+              >
+                All Movies
+              </Link>
+              <Link
                 to="/my-list"
                 className="text-white hover:text-gray-200 transition-colors"
               >
@@ -77,7 +83,6 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
               >
                 Socials
               </Link>
-
               {/* User Profile with dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button onClick={toggleProfileDropdown} className="text-white">
@@ -113,3 +118,4 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
 };
 
 export default Navbar;
+
