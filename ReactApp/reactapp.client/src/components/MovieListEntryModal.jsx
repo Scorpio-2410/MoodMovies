@@ -87,9 +87,9 @@ const MovieListEntryModal = ({ movieListEntry, onClose, onUpdate }) => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="planning">Planning</SelectItem>
                 <SelectItem value="watched">Watched</SelectItem>
                 <SelectItem value="watching">Watching</SelectItem>
-                <SelectItem value="planning">Planning</SelectItem>
               </SelectContent>
             </Select>
           </div>
