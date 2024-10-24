@@ -112,7 +112,7 @@ const HomePage = () => {
           MoviePosterPath: movie.poster_path,
           Status: "planning", // Default status
           IsFavorite: false,
-          Notes: "hello",
+          Notes: "",
           UserRating: 0,
         },
         {
@@ -142,8 +142,6 @@ const HomePage = () => {
           default:
             toast.error("An error occurred. Please try again later.");
         }
-      } else {
-        toast.error("Network error. Please check your connection.");
       }
     }
   };
