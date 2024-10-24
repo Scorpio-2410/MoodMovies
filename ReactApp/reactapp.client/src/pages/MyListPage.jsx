@@ -158,7 +158,11 @@ const MyListPage = () => {
           {["All", "Planning", "Watching", "Watched"].map((status) => (
             <Button
               key={status}
-              variant={statusFilter === status ? "default" : "outline"}
+              variant={
+                statusFilter.toLowerCase() === status.toLowerCase()
+                  ? "default"
+                  : "outline"
+              }
               onClick={() => setStatusFilter(status)}
               className="text-sm"
             >
@@ -193,8 +197,9 @@ const MyListPage = () => {
                   {entry.movieTitle}
                 </h3>
                 <p className="text-gray-600 text-sm mb-1">{entry.movieGenre}</p>
-                <p className="text-gray-500 text-xs italic mb-2">
-                  {entry.notes}
+                <p className="text-gray-500 text-xs italic mb-2 overflow-hidden break-words">
+                  {entry.notes?.slice(0, 200)}
+                  {entry.notes?.length > 200 ? "..." : ""}
                 </p>
                 <div className="mt-auto flex justify-between items-centre">
                   <span className="text-2xl">

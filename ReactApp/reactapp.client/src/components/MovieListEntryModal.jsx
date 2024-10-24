@@ -27,7 +27,7 @@ const MovieListEntryModal = ({ movieListEntry, onClose, onUpdate }) => {
       if (!token) {
         throw new Error("No token found");
       }
-      console.log("AT UPDATE");
+      console.log("AT UPDATE", updatedMovieListEntry.notes);
       const response = await axios.put(
         `/api/MovieListEntry/${updatedMovieListEntry.entryId}`,
         updatedMovieListEntry,
@@ -136,7 +136,7 @@ const MovieListEntryModal = ({ movieListEntry, onClose, onUpdate }) => {
                   notes: e.target.value,
                 })
               }
-              className="w-2/3 min-h-[120px] resize-none"
+              className="w-2/3 h-[120px]  overflow-y-auto"
             />
           </div>
           {/* Save button */}
