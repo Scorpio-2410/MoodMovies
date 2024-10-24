@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { toast } from "sonner"; // Import toast
 
 const UpdateProfilePage = () => {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm();
@@ -40,7 +41,7 @@ const UpdateProfilePage = () => {
       reset(response.data);  // Populate form with the fetched user data
     } catch (error) {
       console.error("Error fetching user data", error);
-      alert("Failed to fetch user data.");
+      toast.error("Failed to fetch user data.");
     }
   };
 
@@ -103,13 +104,13 @@ const UpdateProfilePage = () => {
     // If a new password is provided, validate the confirm password
     if (data.newPassword) {
       if (data.newPassword !== data.confirmPassword) {
-        alert("Passwords do not match.");
+        toast.error("Passwords do not match.");
         return;
       }
 
       // Validate password strength
       if (!validationErrors.minLength || !validationErrors.hasUppercase || !validationErrors.hasNumber || !validationErrors.hasSpecialChar) {
-        alert("Password does not meet the requirements.");
+        toast.error("Password does not meet the requirements.");
         return;
       }
     }
@@ -132,14 +133,14 @@ const UpdateProfilePage = () => {
       );
 
       if (response.status === 200) {
-        alert("Profile updated successfully.");
+        toast.success("Profile Updated Successfully.");
         reset({ ...userData, newPassword: "", confirmPassword: "" });  // Reset form fields
         fetchUserData(); // Refetch user data to reflect updates
       }
     } catch (error) {
       console.error("Error updating profile", error);
       if (error.response && error.response.data) {
-        alert(error.response.data.message || "Failed to update profile.");
+        toast.error(error.response.data.message || "Failed to update profile.");
       }
     } finally {
       setLoading(false);
@@ -161,11 +162,13 @@ const UpdateProfilePage = () => {
         });
 
         localStorage.removeItem("token"); // Remove the token or any session data
-        alert("Profile deleted successfully.");
-        window.location.href = "https://localhost:5173/";
+        toast.success("Profile Deleted Successfully! Redirecting to Index");
+        setTimeout(() => {
+          window.location.href = "https://localhost:5174/";
+        }, 3000);
       } catch (error) {
         console.error("Error deleting profile", error);
-        alert(error.response?.data?.message || "Failed to delete profile.");
+        toast.error(error.response?.data?.message || "Failed to delete profile.");
       } finally {
         setIsDeleting(false);
       }
@@ -238,63 +241,72 @@ const UpdateProfilePage = () => {
                 {...register("newPassword", { onChange: handlePasswordChange })}
                 className="block w-full mt-1 px-4 py-2 border rounded-md"
               />
-              <button type="button" onClick={togglePasswordVisibility} className="absolute inset-y-0 right-3">
-                {showPassword ? "🤐" : "🧐"}
+              <button type="button" onClick={togglePasswordVisibility} className="absolute inset-y-0 right-3 flex items-center">
+                {showPassword ? "🤐" : "🧐"} {/* Toggle Emoji */}
               </button>
             </div>
+            
+            {/* Password validation bullet points */}
+            <div className="mt-2">
+              {password && (
+                <ul className="text-sm">
+                  <li className={validationErrors.minLength ? "text-green-600" : "text-red-600"}>
+                    Password must be at least 8 characters
+                  </li>
+                  <li className={validationErrors.hasUppercase ? "text-green-600" : "text-red-600"}>
+                    Password must contain at least one uppercase letter
+                  </li>
+                  <li className={validationErrors.hasNumber ? "text-green-600" : "text-red-600"}>
+                    Password must contain at least one number
+                  </li>
+                  <li className={validationErrors.hasSpecialChar ? "text-green-600" : "text-red-600"}>
+                    Password must contain at least one special character
+                  </li>
+                </ul>
+              )}
 
-            {/* Password validation bullet points - only show if a password is being typed */}
-            {password && (
-              <ul className="mt-2 text-sm">
-                <li className={validationErrors.minLength ? "text-green-600" : "text-red-600"}>
-                  Password must be at least 8 characters
-                </li>
-                <li className={validationErrors.hasUppercase ? "text-green-600" : "text-red-600"}>
-                  Password must contain at least one uppercase letter
-                </li>
-                <li className={validationErrors.hasNumber ? "text-green-600" : "text-red-600"}>
-                  Password must contain at least one number
-                </li>
-                <li className={validationErrors.hasSpecialChar ? "text-green-600" : "text-red-600"}>
-                  Password must contain at least one special character
-                </li>
-              </ul>
-            )}
-
-            <div className="flex items-center mt-2">
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mr-3">
-                <div
-                  className={`h-2.5 rounded-full ${
-                    passwordStrength === 4 ? "bg-green-600" : 
-                    passwordStrength === 3 ? "bg-yellow-500" : 
-                    passwordStrength === 2 ? "bg-orange-500" : "bg-red-600"
-                  }`}
-                  style={{ width: `${(passwordStrength / 4) * 100}%` }}
-                />
-              </div>
-              <span>{emoji}</span>
+              {/* Password Strength Bar */}
+              {password && (
+                <div className="flex items-center mt-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 mr-3">
+                    <div
+                      className={`h-2.5 rounded-full ${
+                        passwordStrength === 4 ? "bg-green-600" : 
+                        passwordStrength === 3 ? "bg-yellow-500" : 
+                        passwordStrength === 2 ? "bg-orange-500" : "bg-red-600"
+                      }`}
+                      style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                    />
+                  </div>
+                  <span>{emoji}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Only show confirm password if a new password is typed */}
-          {password && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  {...register("confirmPassword", {
-                    validate: value => value === password || "Passwords do not match",
-                  })}
-                  className="block w-full mt-1 px-4 py-2 border rounded-md"
-                />
-                <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute inset-y-0 right-3">
-                  {showConfirmPassword ? "🤐" : "🧐"}
-                </button>
-                {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword.message}</span>}
-              </div>
+          {/* Confirm Password Field */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("confirmPassword", {
+                  validate: value => value === password || "Passwords do not match",
+                })}
+                className="block w-full mt-1 px-4 py-2 border rounded-md"
+              />
+              <button type="button" onClick={toggleConfirmPasswordVisibility} className="absolute inset-y-0 right-3 flex items-center">
+                {showConfirmPassword ? "🤐" : "🧐"} {/* Same Toggle Emoji as Password */}
+              </button>
             </div>
-          )}
+
+            {/* Error message container with fixed height */}
+            <div className="h-6 mt-1">
+              {errors.confirmPassword && (
+                <span className="text-red-500">{errors.confirmPassword.message}</span>
+              )}
+            </div>
+          </div>
 
           <button
             type="submit"

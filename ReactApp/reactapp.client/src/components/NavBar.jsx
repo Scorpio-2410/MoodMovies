@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Film, User } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner"; // Import toast
 
 const Navbar = ({ isLoggedIn, handleLogout }) => {
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false); 
-  const dropdownRef = useRef(null);  // Ref for the dropdown element
+  const dropdownRef = useRef(null); 
 
   const isIndexPage = location.pathname === '/';
 
@@ -17,7 +18,7 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsProfileOpen(false);  // Close dropdown if click is outside of it
+        setIsProfileOpen(false); 
       }
     };
 
@@ -31,6 +32,11 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isProfileOpen]);
+
+  const handleLogoutAndToast = () => {
+    handleLogout();
+    toast.success("Successfully Logged Out!"); 
+  };
 
   return (
     <nav className="bg-primary p-4">
@@ -88,7 +94,7 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
                     </Link>
                     <button
                       onClick={() => {
-                        handleLogout();
+                        handleLogoutAndToast();
                         setIsProfileOpen(false); // Close dropdown on logout
                       }}
                       className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -107,4 +113,3 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
 };
 
 export default Navbar;
-

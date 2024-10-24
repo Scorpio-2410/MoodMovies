@@ -5,7 +5,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import IndexPage from "./pages/IndexPage"; 
 import ForgotPasswordPage from "./pages/ForgotPasswordPage"; 
-import NotFoundPage from "./pages/NotFoundPage"; 
+import NotFoundPage from "./pages/NotFoundPage";
+import AllMoviesPage from './pages/AllMoviesPage'; 
 import MyListPage from "./pages/MyListPage";
 import SocialsPage from "./pages/SocialsPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage"; 
@@ -82,6 +83,14 @@ function App() {
             element={
               <PrivateRoute isLoggedIn={isLoggedIn}>
                 <HomePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/all-movies"
+            element={
+              <PrivateRoute isLoggedIn={isLoggedIn}>
+                <AllMoviesPage />
               </PrivateRoute>
             }
           />

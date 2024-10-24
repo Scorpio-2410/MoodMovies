@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner'; // Import toast from sonner
 
 const ForgotPasswordPage = () => {
   const { register, handleSubmit, formState: { errors }, watch, setError, clearErrors, reset } = useForm();
   const [isVerified, setIsVerified] = useState(false);
   const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password visibility
-  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength tracking
-  const [emoji, setEmoji] = useState('😡'); // Emoji based on password strength
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0); 
+  const [emoji, setEmoji] = useState('😡'); 
   const [validationErrors, setValidationErrors] = useState({
     minLength: false,
     hasUppercase: false,
@@ -18,19 +19,18 @@ const ForgotPasswordPage = () => {
   });
 
   const navigate = useNavigate();
-  const password = watch('newPassword'); // Watch for password changes
+  const password = watch('newPassword'); 
+  const confirmPassword = watch('confirmPassword'); 
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  // Validate password strength and set emoji and color
   const validatePasswordStrength = (password) => {
     const hasMinLength = password.length >= 8;
     const hasUppercase = /[A-Z]/.test(password);
@@ -52,7 +52,6 @@ const ForgotPasswordPage = () => {
 
     setPasswordStrength(strength);
 
-    // Set emoji based on strength
     if (strength === 4) {
       setEmoji('😁');
       clearErrors("newPassword");
@@ -64,17 +63,15 @@ const ForgotPasswordPage = () => {
       setEmoji('😡');
       setError("newPassword", {
         type: "manual",
-        message: "Password is too weak, make sure it includes uppercase, number, and special character."
+        message: "Password is too weak."
       });
     }
   };
 
-  // Watch for password input changes and validate strength
   const handlePasswordChange = (e) => {
     validatePasswordStrength(e.target.value);
   };
 
-  // Handle form submission for verification
   const onSubmitVerify = async (data) => {
     const { username, email, dob } = data;
 
@@ -88,23 +85,17 @@ const ForgotPasswordPage = () => {
       if (response.ok) {
         setIsVerified(true);
         setUsername(username);
-        reset(); // Clear the form for password input
+        reset();
+        toast.success('Details verified successfully!');
       } else {
-        setError("username", {
-          type: "manual",
-          message: "The provided details do not match our records."
-        });
+        toast.error('Verification failed. Please check your details.');
       }
     } catch (error) {
       console.error('Error verifying user: ', error);
-      setError("username", {
-        type: "manual",
-        message: "An error occurred while verifying your details."
-      });
+      toast.error('An error occurred while verifying your details.');
     }
   };
 
-  // Handle password reset
   const onSubmitPassword = async (data) => {
     const { newPassword, confirmPassword } = data;
 
@@ -124,20 +115,16 @@ const ForgotPasswordPage = () => {
       });
 
       if (response.ok) {
-        alert("Password successfully updated!");
-        navigate('/login'); // Redirect to login page after successful password reset
+        toast.success("Password Successfully Updated! Redirecting to Login");
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
       } else {
-        setError("newPassword", {
-          type: "manual",
-          message: "Error resetting password. Please try again."
-        });
+        toast.error('Error resetting password. Please try again.');
       }
     } catch (error) {
       console.error('Error resetting password: ', error);
-      setError("newPassword", {
-        type: "manual",
-        message: "An error occurred while resetting your password."
-      });
+      toast.error('An error occurred while resetting your password.');
     }
   };
 
@@ -156,7 +143,6 @@ const ForgotPasswordPage = () => {
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                 {...register('username', { required: 'Username is required' })}
               />
-              {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
             </div>
 
             <div className="mb-4">
@@ -166,7 +152,6 @@ const ForgotPasswordPage = () => {
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                 {...register('email', { required: 'Email is required' })}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
             </div>
 
             <div className="mb-4">
@@ -176,7 +161,6 @@ const ForgotPasswordPage = () => {
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm"
                 {...register('dob', { required: 'Date of Birth is required' })}
               />
-              {errors.dob && <p className="text-red-500 text-sm">{errors.dob.message}</p>}
             </div>
 
             <button
@@ -201,8 +185,7 @@ const ForgotPasswordPage = () => {
                       /[A-Z]/.test(value) &&
                       /[0-9]/.test(value) &&
                       /[^A-Za-z0-9]/.test(value) &&
-                      value.length >= 8 ||
-                      'Password must be at least 8 characters, with one uppercase letter, one number, and one special character',
+                      value.length >= 8 || 'Password must meet the requirements',
                   })}
                 />
                 <button
@@ -213,6 +196,7 @@ const ForgotPasswordPage = () => {
                   {showPassword ? '🤐' : '🧐'}
                 </button>
               </div>
+              {/* Show password validation errors */}
               {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword.message}</p>}
 
               {/* Password Validation Bullet Points */}
@@ -270,12 +254,13 @@ const ForgotPasswordPage = () => {
                   {showConfirmPassword ? '🤐' : '🧐'}
                 </button>
               </div>
+              {/* Show confirm password validation errors */}
               {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
             </div>
 
             <button
               type="submit"
-              className="mt-4 w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors"
+              className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
               Reset Password
             </button>
@@ -287,4 +272,3 @@ const ForgotPasswordPage = () => {
 };
 
 export default ForgotPasswordPage;
-

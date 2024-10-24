@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner"; // Import toast from sonner
 
 export default function LoginPage({ setIsLoggedIn }) {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -34,13 +35,19 @@ export default function LoginPage({ setIsLoggedIn }) {
 
       // Set the user as logged in
       setIsLoggedIn(true);
-      alert("Successful login!");
 
-      // Navigate to the /home page on successful login
-      navigate('/home');
+      // Show success toast
+      toast.success("Successful Login! Redirecting to Home");
+
+      // Delay the navigation to allow the toast to be visible
+      setTimeout(() => {
+        navigate('/home');
+      }, 3000); // 3-second delay before redirect
+
     } catch (error) {
-      setErrorMessage('Invalid username or password');
-      alert.error('Error during login: ', error);
+      // Show error message using toast
+      toast.error('Invalid username or password');
+      console.error('Error during login: ', error);
     }
   };
 
@@ -53,13 +60,6 @@ export default function LoginPage({ setIsLoggedIn }) {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-
-        {/* Display error message */}
-        {errorMessage && (
-          <div className="text-red-500 text-center mb-4">
-            {errorMessage}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username field */}

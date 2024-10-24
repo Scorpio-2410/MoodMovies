@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner"; // Import the toast from sonner
 
 function RegisterPage() {
   const {
@@ -15,17 +16,16 @@ function RegisterPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0); // Track password strength
-  const [emoji, setEmoji] = useState("😡"); // Set initial emoji to angry
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [emoji, setEmoji] = useState("😡");
   const [validationErrors, setValidationErrors] = useState({
     minLength: false,
     hasUppercase: false,
     hasNumber: false,
     hasSpecialChar: false
   });
-  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-  
+
   const password = watch("password");
 
   const onSubmit = async (data) => {
@@ -42,10 +42,16 @@ function RegisterPage() {
         throw new Error('Registration failed');
       }
 
-      alert("Registration successful! Please login.");
-      navigate("/login");
+      // Show success message using sonner toast
+      toast.success("Registration Successful! Redirecting to Login");
+
+      // Delay the redirection to allow the toast to show for 3 seconds
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
     } catch (error) {
-      setErrorMessage('Username or email already exists.');
+      // Show error message using sonner toast
+      toast.error('Username or email already exists.');
       console.error('Error during registration: ', error);
     }
   };
@@ -91,11 +97,6 @@ function RegisterPage() {
     } else {
       setEmoji("😡");
     }
-  };
-
-  // Watch for password input changes and validate strength
-  const handlePasswordChange = (e) => {
-    validatePasswordStrength(e.target.value);
   };
 
   return (
@@ -165,7 +166,7 @@ function RegisterPage() {
             {errors.username && <span className="text-red-500">{errors.username.message}</span>}
           </div>
 
-          {/* Password field with eye button */}
+          {/* Password */}
           <div>
             <label className="block text-gray-700 mb-1">Password</label>
             <div className="relative">
@@ -175,7 +176,7 @@ function RegisterPage() {
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 {...register("password", {
                   required: "Password is required",
-                  onChange: handlePasswordChange,
+                  onChange: (e) => validatePasswordStrength(e.target.value),
                   validate: (value) =>
                     /[A-Z]/.test(value) &&
                     /[0-9]/.test(value) &&
@@ -193,7 +194,7 @@ function RegisterPage() {
               </button>
             </div>
 
-            {/* Password validation bullet points */}
+            {/* Password validation */}
             <ul className="mt-2 text-sm">
               <li className={validationErrors.minLength ? "text-green-600" : "text-red-600"}>
                 Password must be at least 8 characters
@@ -229,7 +230,7 @@ function RegisterPage() {
             </div>
           </div>
 
-          {/* Confirm Password with eye button */}
+          {/* Confirm Password */}
           <div>
             <label className="block text-gray-700 mb-1">Confirm Password</label>
             <div className="relative">
@@ -273,14 +274,11 @@ function RegisterPage() {
           </div>
         </form>
 
-        {/* Error message */}
-        {errorMessage && <p className="text-red-500 text-center mt-2">{errorMessage}</p>}
-
         {/* Link to go back to login */}
         <div className="mt-4 text-center">
           <span className="text-sm text-gray-700">Already a member?</span>
           <button onClick={() => navigate("/login")} className="ml-1 text-sm text-indigo-600 hover:underline">
-            Login instead
+            Sign in
           </button>
         </div>
       </div>

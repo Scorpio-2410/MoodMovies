@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 // TMDB API key
-const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582"; // Replace this with your TMDB API key
+const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582"; 
 
 // Predefined moods and genres
 const predefinedMoods = [
@@ -53,13 +53,20 @@ const predefinedMoods = [
   }, // Adventure
 ];
 
-// Function to fetch movies based on the selected mood's genre
-const fetchMoviesByMood = async (genreId, pageNum = 1) => {
+// Function to fetch movies based on the selected mood's genre and randomize them
+const fetchMoviesByMood = async (genreId) => {
   try {
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&page=${pageNum}`,
+      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}`
     );
-    return response.data.results.slice(0, 4); // Return top 4 movies
+
+    const movies = response.data.results;
+    
+    // Shuffle the movie array
+    const shuffledMovies = movies.sort(() => Math.random() - 0.5);
+
+    // Return top 4 shuffled movies
+    return shuffledMovies.slice(0, 4);
   } catch (error) {
     console.error("Error fetching movies:", error);
     toast.error("Failed to fetch movie recommendations.");
@@ -71,13 +78,11 @@ const HomePage = () => {
   const [selectedMood, setSelectedMood] = useState("");
   const [recommendations, setRecommendations] = useState([]); // Movie recommendations
   const [loading, setLoading] = useState(false); // Loading state
-  const [page, setPage] = useState(1); // Pagination for movies
 
   const handleMoodSelect = async (mood) => {
     setSelectedMood(mood.name);
-    setPage(1); // Reset to page 1
     setLoading(true); // Show loading indicator
-    const movies = await fetchMoviesByMood(mood.genre, 1);
+    const movies = await fetchMoviesByMood(mood.genre);
     setRecommendations(movies); // Set movie recommendations
     setLoading(false); // Turn off loading
   };
@@ -86,10 +91,8 @@ const HomePage = () => {
     const selectedGenre = predefinedMoods.find(
       (m) => m.name === selectedMood,
     ).genre;
-    const newPage = page + 1; // Fetch next page of movies
-    setPage(newPage);
     setLoading(true); // Show loading indicator
-    const movies = await fetchMoviesByMood(selectedGenre, newPage);
+    const movies = await fetchMoviesByMood(selectedGenre); // Fetch random movies
     setRecommendations(movies); // Update movie recommendations
     setLoading(false); // Turn off loading
   };
@@ -285,3 +288,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
