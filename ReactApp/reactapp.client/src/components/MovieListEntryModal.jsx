@@ -10,16 +10,44 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import axios from "axios";
+import { toast } from "sonner";
 
 const MovieListEntryModal = ({ movie, onClose, onUpdate }) => {
   // State management
   const [updatedMovie, setUpdatedMovie] = useState(movie);
-  const [rating, setRating] = useState(movie.rating || 0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function to handle updating the movie and closing the modal
-  const handleUpdate = () => {
-    onUpdate({ ...updatedMovie, rating });
-    onClose();
+  const handleUpdate = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      console.log("AT UPDATE");
+      const response = await axios.put(
+        `/api/MovieListEntry/${updatedMovie.entryId}`,
+        updatedMovie,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      // Update the UI and close the modal if successful
+      if (response.status === 200) {
+        onUpdate(response.data);
+        toast.success("Movie updated successfully");
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error updating movie:", error);
+      toast.error("Failed to update movie. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,8 +61,8 @@ const MovieListEntryModal = ({ movie, onClose, onUpdate }) => {
         {/* Movie poster */}
         <div className="col-span-1">
           <img
-            src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
-            alt={movie.title}
+            src={`https://image.tmdb.org/t/p/w500${updatedMovie.moviePosterPath}`}
+            alt={updatedMovie.movieTitle}
             className="w-full h-auto rounded-lg shadow-md"
           />
         </div>
@@ -49,7 +77,7 @@ const MovieListEntryModal = ({ movie, onClose, onUpdate }) => {
               onValueChange={(value) =>
                 setUpdatedMovie({ ...updatedMovie, status: value })
               }
-              defaultValue={movie.status}
+              defaultValue={updatedMovie.status}
             >
               <SelectTrigger className="w-2/3">
                 <SelectValue placeholder="Status" />
@@ -71,15 +99,17 @@ const MovieListEntryModal = ({ movie, onClose, onUpdate }) => {
                 min={0}
                 max={10}
                 step={0.1}
-                value={[rating]}
-                onValueChange={(value) => setRating(value[0])}
+                value={[updatedMovie.userRating || 0]}
+                onValueChange={(value) =>
+                  setUpdatedMovie({ ...updatedMovie, userRating: value[0] })
+                }
                 className="w-full"
               />
               {/* Rating display */}
               <div className="flex justify-between text-sm text-gray-500">
                 <span>0</span>
                 <span className="font-medium text-primary">
-                  {rating.toFixed(1)}
+                  {updatedMovie.userRating?.toFixed(1) || "0.0"}
                 </span>
                 <span>10</span>
               </div>

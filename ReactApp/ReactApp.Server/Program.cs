@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using ReactApp.Server.Features.Users;
+using ReactApp.Server.Features.MovieListEntries;
 
 namespace ReactApp.Server
 {
@@ -52,6 +53,8 @@ namespace ReactApp.Server
             });
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<IMovieListEntryService, MovieListEntryService>();
 
             var app = builder.Build();
 

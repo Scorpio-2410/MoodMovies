@@ -94,6 +94,86 @@ const HomePage = () => {
     setLoading(false); // Turn off loading
   };
 
+  const handleAddToList = async (movie) => {
+    try {
+      // Check if the user is logged in
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to add movies to your list.");
+        return;
+      }
+
+      // Send post request
+      const response = await axios.post(
+        "/api/MovieListEntry",
+        {
+          MovieTitle: movie.title,
+          MovieGenre: movie.genre_ids.map((id) => genreIdToName(id)).join(", "), // Convert genre IDs to names
+          MoviePosterPath: movie.poster_path,
+          Status: "planning", // Default status
+          IsFavorite: false,
+          Notes: "hello",
+          UserRating: 0,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      // Check if successful
+      if (response.status === 201) {
+        toast.success(`${movie.title} added to your list!`);
+      } else {
+        toast.error("Failed to add movie to your list. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding movie to list:", error);
+      // Handle different error scenarios
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            toast.error("Your session has expired. Please log in again.");
+            break;
+          case 409:
+            toast.info("This movie is already in your list.");
+            break;
+          default:
+            toast.error("An error occurred. Please try again later.");
+        }
+      } else {
+        toast.error("Network error. Please check your connection.");
+      }
+    }
+  };
+
+  // Helper function to convert genre ID to name
+  const genreIdToName = (id) => {
+    const genres = {
+      27: "Horror",
+      878: "Science Fiction",
+      35: "Comedy",
+      10749: "Romance",
+      18: "Drama",
+      28: "Action",
+      12: "Adventure",
+      53: "Thriller",
+      80: "Crime",
+      9648: "Mystery",
+      16: "Animation",
+      14: "Fantasy",
+      10751: "Family",
+      36: "History",
+      99: "Documentary",
+      10402: "Music",
+      37: "Western",
+      10770: "TV Movie",
+      10752: "War",
+    };
+    return genres[id] || "Unknown";
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8">Select Your Mood</h1>
@@ -182,8 +262,7 @@ const HomePage = () => {
                         className="bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors duration-300"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Add to list functionality here
-                          console.log(`Add ${movie.title} to list`);
+                          handleAddToList(movie);
                         }}
                       >
                         Add to List

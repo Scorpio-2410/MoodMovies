@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
+import { toast } from "sonner";
 
 import MovieListEntryModal from "@/components/MovieListEntryModal";
 
@@ -79,15 +81,12 @@ const dummyMovies = [
 
 const MyListPage = () => {
   // State management
-  const [movies, setMovies] = useState(dummyMovies);
+  const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [genreFilter, setGenreFilter] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Temporary user ID for development
-  const userId = "user123";
 
   // List of available genres for filtering
   const genres = [
@@ -118,24 +117,64 @@ const MyListPage = () => {
   // Fetch movies when search term or filters change
   useEffect(() => {
     fetchMovies();
-  }, [searchTerm, statusFilter, genreFilter]);
+  }, []);
 
-  // Placeholder function for fetching movies
-  const fetchMovies = () => {
-    console.log("Fetching movies...");
-    // TODO: Implement actual API call
+  const fetchMovies = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      const response = await axios.get("/api/MovieListEntry", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setMovies(response.data);
+      console.log("Movies:", response.data);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handler for updating a movie
-  const handleUpdateMovie = (updatedMovie) => {
-    console.log("Updating movie:", updatedMovie);
-    // TODO: Implement actual update logic
+  const handleUpdateMovie = async (updatedMovie) => {
+    setMovies((prevMovies) =>
+      prevMovies.map((movie) =>
+        // Replace the movie with the updated movie
+        movie.entryId === updatedMovie.entryId ? updatedMovie : movie,
+      ),
+    );
   };
 
   // Handler for deleting a movie
-  const handleDeleteMovie = (movieId) => {
-    console.log("Deleting movie with ID:", movieId);
-    // TODO: Implement actual delete logic
+  const handleDeleteMovie = async (movieId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+
+      await axios.delete(`/api/MovieListEntry/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie.entryId !== movieId),
+      );
+      toast.success("Movie removed from your list");
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+      toast.error("Failed to delete movie. Please try again.");
+    }
   };
 
   return (
@@ -186,30 +225,27 @@ const MyListPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {movies.map((movie) => (
             <div
-              key={movie.id}
+              key={movie.entryId}
               className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl hover:scale-105"
             >
-              {/* Movie poster and rating */}
               <div className="relative">
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
-                  alt={movie.title}
+                  src={`https://image.tmdb.org/t/p/w500${movie.moviePosterPath}`}
+                  alt={movie.movieTitle}
                   className="w-full h-56 object-cover"
                 />
                 <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-yellow-400 px-2 py-1 rounded-full text-sm">
-                  ⭐ {movie.rating.toFixed(1)}
+                  ⭐ {movie.userRating?.toFixed(1) || "N/A"}
                 </div>
               </div>
-              {/* Movie details */}
               <div className="p-4 flex-grow flex flex-col">
                 <h3 className="text-xl font-semibold mb-1 text-gray-800">
-                  {movie.title}
+                  {movie.movieTitle}
                 </h3>
-                <p className="text-gray-600 text-sm mb-1">{movie.genre}</p>
+                <p className="text-gray-600 text-sm mb-1">{movie.movieGenre}</p>
                 <p className="text-gray-500 text-xs italic mb-2">
                   {movie.notes}
                 </p>
-                {/* Status emoji and action buttons */}
                 <div className="mt-auto flex justify-between items-centre">
                   <span className="text-2xl">
                     {getStatusEmoji(movie.status)}
@@ -227,7 +263,7 @@ const MyListPage = () => {
                       variant="outline"
                       size="sm"
                       className="bg-transparent border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors duration-300"
-                      onClick={() => handleDeleteMovie(movie.id)}
+                      onClick={() => handleDeleteMovie(movie.entryId)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
