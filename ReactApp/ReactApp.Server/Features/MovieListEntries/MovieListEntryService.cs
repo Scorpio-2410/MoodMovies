@@ -13,11 +13,32 @@ namespace ReactApp.Server.Features.MovieListEntries
         }
 
         // Retrieve all movie list entries for a specific user
-        public async Task<IEnumerable<MovieListEntry>> GetAllMovieListEntriesAsync(int userId)
+        public async Task<IEnumerable<MovieListEntry>> GetAllMovieListEntriesAsync(int userId, string searchTerm = null, string statusFilter = null, string genreFilter = null)
         {
-            return await _context.MovieListEntries
-                .Where(e => e.UserId == userId)
-                .ToListAsync();
+            var query = _context.MovieListEntries.Where(m => m.UserId == userId);
+
+            // Apply search term filter
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(m => EF.Functions.Like(m.MovieTitle.ToLower(), $"%{searchTerm}%"));
+            }
+
+            // Apply status filter
+            if (!string.IsNullOrWhiteSpace(statusFilter) && statusFilter.ToLower() != "all")
+            {
+                statusFilter = statusFilter.ToLower();
+                query = query.Where(m => m.Status.ToLower() == statusFilter);
+            }
+
+            // Apply genre filter
+            if (!string.IsNullOrWhiteSpace(genreFilter) && genreFilter.ToLower() != "all")
+            {
+                genreFilter = genreFilter.ToLower();
+                query = query.Where(m => EF.Functions.Like(m.MovieGenre.ToLower(), $"%{genreFilter}%"));
+            }
+
+            return await query.ToListAsync();
         }
 
         // Create a new movie list entry

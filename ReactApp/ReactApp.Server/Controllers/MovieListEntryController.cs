@@ -27,20 +27,27 @@ namespace ReactApp.Server.Controllers
             return int.Parse(userId);
         }
 
-        // Get all movie list entries for the authenticated user
+        // Get all movie list entries for the authenticated user with optional query params
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MovieListEntry>>> GetAllMovieListEntries()
+        public async Task<ActionResult<IEnumerable<MovieListEntry>>> GetAllMovieListEntries(
+            [FromQuery] string searchTerm = null,
+            [FromQuery] string statusFilter = null,
+            [FromQuery] string genreFilter = null)
         {
             try
             {
                 int userId = GetUserId();
-                var entries = await _movieListEntryService.GetAllMovieListEntriesAsync(userId);
+                var entries = await _movieListEntryService.GetAllMovieListEntriesAsync(userId, searchTerm, statusFilter, genreFilter);
                 return Ok(entries);
             }
             catch (UnauthorizedAccessException)
             {
                 return Unauthorized("Invalid user token");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

@@ -15,77 +15,13 @@ import { toast } from "sonner";
 
 import MovieListEntryModal from "@/components/MovieListEntryModal";
 
-// Dummy data
-const dummyMovies = [
-  {
-    id: 1,
-    userId: "user123",
-    title: "Inception",
-    genre: "Sci-Fi",
-    rating: 8.8,
-    status: "watched",
-    poster: "/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
-    notes: "Mind-bending plot, great visuals.",
-  },
-  {
-    id: 2,
-    userId: "user123",
-    title: "The Shawshank Redemption",
-    genre: "Drama",
-    rating: 9.3,
-    status: "watching",
-    poster: "/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
-    notes: "Powerful story of hope and friendship.",
-  },
-  {
-    id: 3,
-    userId: "user123",
-    title: "Pulp Fiction",
-    genre: "Crime",
-    rating: 8.9,
-    status: "watching",
-    poster: "/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
-    notes: "Quirky dialogue, non-linear storytelling.",
-  },
-  {
-    id: 4,
-    userId: "user456",
-    title: "The Godfather",
-    genre: "Crime",
-    rating: 9.2,
-    status: "planning",
-    poster: "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-    notes: "Classic mafia epic, must-watch.",
-  },
-  {
-    id: 5,
-    userId: "user123",
-    title: "The Dark Knight",
-    genre: "Action",
-    rating: 9.0,
-    status: "watched",
-    poster: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    notes: "Heath Ledger's Joker is unforgettable.",
-  },
-  {
-    id: 6,
-    userId: "user123",
-    title: "Forrest Gump",
-    genre: "Drama",
-    rating: 8.8,
-    status: "planning",
-    poster: "/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
-    notes: "Heartwarming journey through history.",
-  },
-];
-
 const MyListPage = () => {
   // State management
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [genreFilter, setGenreFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [genreFilter, setGenreFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
 
   // List of available genres for filtering
@@ -117,7 +53,7 @@ const MyListPage = () => {
   // Fetch movies when search term or filters change
   useEffect(() => {
     fetchMovies();
-  }, []);
+  }, [searchTerm, statusFilter, genreFilter]);
 
   const fetchMovies = async () => {
     setIsLoading(true);
@@ -127,17 +63,29 @@ const MyListPage = () => {
         throw new Error("No token found");
       }
 
+      // Setup Url Params
+      const params = new URLSearchParams();
+      if (searchTerm) params.append("searchTerm", searchTerm);
+      if (statusFilter !== "all") params.append("statusFilter", statusFilter);
+      if (genreFilter !== "all") params.append("genreFilter", genreFilter);
+
+      // Get request to fetch movies
       const response = await axios.get("/api/MovieListEntry", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: params,
       });
 
       setMovies(response.data);
       console.log("Movies:", response.data);
     } catch (error) {
       console.error("Error fetching movies:", error);
-      // Handle error (e.g., show error message to user)
+      if (error.response) {
+        toast.error(
+          `Error: ${error.response.data.message || "Failed to fetch movies"}`,
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -205,7 +153,7 @@ const MyListPage = () => {
           </SelectContent>
         </Select>
         <div className="flex gap-2">
-          {["All", "Watching", "Watched", "Planning"].map((status) => (
+          {["All", "Planning", "Watching", "Watched"].map((status) => (
             <Button
               key={status}
               variant={statusFilter === status ? "default" : "outline"}
