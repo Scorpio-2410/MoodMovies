@@ -19,7 +19,7 @@ const predefinedMoods = [
   {
     name: "Sad",
     emoji: "😢",
-    genres: [18, 99], // Drama, Documentaries 
+    genres: [18, 99], // Drama, Documentaries
     bgColor: "bg-blue-300",
     textColor: "text-blue-900",
     avoidSexualContent: true, // Flag for filtering out sexual content
@@ -27,7 +27,7 @@ const predefinedMoods = [
   {
     name: "Love",
     emoji: "❤️",
-    genres: [10749, 18], // Romance and Drama 
+    genres: [10749, 18], // Romance and Drama
     bgColor: "bg-red-300",
     textColor: "text-red-900",
     avoidSexualContent: true, // Flag for filtering out sexual content
@@ -58,17 +58,18 @@ const predefinedMoods = [
 // Store previously recommended movies to avoid repetition
 let previousRecommendations = [];
 
-// Function to check for keywords that might indicate inappropriate content
+// Function to check for keywords that might indicate inappropriate content and movies with no image
 const filterOutInappropriateMovies = (movies) => {
   const inappropriateKeywords = ['erotic', 'sex', 'adult', 'nudity', 'porn'];
   return movies.filter(movie => {
-    const hasInappropriateTitle = inappropriateKeywords.some(keyword => 
+    const hasInappropriateTitle = inappropriateKeywords.some(keyword =>
       movie.title.toLowerCase().includes(keyword)
     );
     const hasInappropriateOverview = inappropriateKeywords.some(keyword =>
       movie.overview.toLowerCase().includes(keyword)
     );
-    return !hasInappropriateTitle && !hasInappropriateOverview;
+    // Filter out movies with inappropriate content or missing poster
+    return !hasInappropriateTitle && !hasInappropriateOverview && movie.poster_path;
   });
 };
 
@@ -77,7 +78,7 @@ let currentPage = 1; // Initialize page tracking
 const fetchMoviesByMood = async (mood) => {
   try {
     const genreQuery = mood.genres.join(",");
-    
+
     // Use the certification filter if the mood should avoid sexual content (Sad, Love)
     const certificationFilter = mood.avoidSexualContent
       ? "&certification_country=US&certification.lte=PG-13"
@@ -90,7 +91,7 @@ const fetchMoviesByMood = async (mood) => {
 
     let movies = response.data.results;
 
-    // Filter out inappropriate movies
+    // Filter out inappropriate movies and those without images
     movies = filterOutInappropriateMovies(movies);
 
     // Shuffle the movies to get a randomized selection
@@ -267,7 +268,7 @@ const HomePage = () => {
                 onClick={() =>
                   window.open(
                     `https://www.themoviedb.org/movie/${movie.id}`,
-                    "_blank",
+                    "_blank"
                   )
                 }
               >
@@ -275,7 +276,7 @@ const HomePage = () => {
                   <img
                     src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
                     alt={movie.title}
-                    className="w-full h-96 object-cover"
+                    className="w-full h-104 object-cover" // Ensuring proper image display
                   />
                   <div className="p-4">
                     <h3 className="font-semibold text-lg mb-2 truncate">
@@ -318,3 +319,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
