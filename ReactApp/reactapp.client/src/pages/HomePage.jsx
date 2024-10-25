@@ -72,35 +72,35 @@ const filterOutInappropriateMovies = (movies) => {
   });
 };
 
+let currentPage = 1; // Initialize page tracking
+
 const fetchMoviesByMood = async (mood) => {
   try {
     const genreQuery = mood.genres.join(",");
+    
+    // Use the certification filter if the mood should avoid sexual content (Sad, Love)
     const certificationFilter = mood.avoidSexualContent
       ? "&certification_country=US&certification.lte=PG-13"
-      : "";
+      : ""; // No filter for other moods
 
+    // Append the page parameter to request additional pages
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}&page=${currentPage}`
     );
 
     let movies = response.data.results;
 
-    // Filter out movies with inappropriate keywords in title or description
+    // Filter out inappropriate movies
     movies = filterOutInappropriateMovies(movies);
 
-    // Filter out previously recommended movies
-    const newMovies = movies.filter((movie) => !previousRecommendations.includes(movie.id));
+    // Shuffle the movies to get a randomized selection
+    const shuffledMovies = movies.sort(() => Math.random() - 0.5);
 
-    // Shuffle the new movie array
-    const shuffledMovies = newMovies.sort(() => Math.random() - 0.5);
+    // Move to the next page for the next request to get fresh results
+    currentPage += 1;
 
-    // Return top 4 shuffled movies
-    const recommendedMovies = shuffledMovies.slice(0, 4);
-
-    // Add new recommended movies to the previous recommendations list
-    previousRecommendations.push(...recommendedMovies.map((movie) => movie.id));
-
-    return recommendedMovies;
+    // Return the top 4 shuffled movies
+    return shuffledMovies.slice(0, 4);
   } catch (error) {
     console.error("Error fetching movies:", error);
     toast.error("Failed to fetch movie recommendations.");
