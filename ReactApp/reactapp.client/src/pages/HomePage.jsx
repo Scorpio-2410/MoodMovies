@@ -1,72 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import axios from "axios";
 
 // TMDB API key
-const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582"; 
+const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582";
 
-// Predefined moods and genres
+// Predefined moods with refined genre mapping for Sad movies
 const predefinedMoods = [
   {
     name: "Happy",
     emoji: "😊",
-    genre: 35,
+    genres: [35, 10751], // Comedy, Family
     bgColor: "bg-yellow-300",
     textColor: "text-yellow-900",
-  }, // Comedy
+  },
   {
     name: "Sad",
     emoji: "😢",
-    genre: 18,
+    genres: [18, 99], // Drama, Documentaries (serious themes like depression, war, death)
     bgColor: "bg-blue-300",
     textColor: "text-blue-900",
-  }, // Drama
+    avoidSexualContent: true, // Flag for filtering out sexual content
+  },
   {
     name: "Love",
     emoji: "❤️",
-    genre: 10749,
+    genres: [10749, 18], // Romance and Drama (filtered for love stories, avoiding explicit content)
     bgColor: "bg-red-300",
     textColor: "text-red-900",
-  }, // Romance
+    avoidSexualContent: true, // Flag for filtering out sexual content
+  },
   {
     name: "Anger",
     emoji: "😡",
-    genre: 28,
+    genres: [28, 80, 53], // Action, Crime, Thriller
     bgColor: "bg-orange-400",
     textColor: "text-orange-900",
-  }, // Action
+  },
   {
     name: "Scared",
     emoji: "😨",
-    genre: 27,
+    genres: [27, 53, 9648], // Horror, Thriller, Mystery
     bgColor: "bg-purple-300",
     textColor: "text-purple-900",
-  }, // Horror
+  },
   {
     name: "Adventurous",
     emoji: "🏔️",
-    genre: 12,
+    genres: [12, 14, 16], // Adventure, Fantasy, Animation
     bgColor: "bg-gray-300",
     textColor: "text-gray-900",
-  }, // Adventure
+  },
 ];
 
-// Function to fetch movies based on the selected mood's genre and randomize them
-const fetchMoviesByMood = async (genreId) => {
+// Store previously recommended movies to avoid repetition
+let previousRecommendations = [];
+
+// Function to check for keywords that might indicate inappropriate content
+const filterOutInappropriateMovies = (movies) => {
+  const inappropriateKeywords = ['erotic', 'sex', 'adult', 'nudity', 'porn'];
+  return movies.filter(movie => {
+    const hasInappropriateTitle = inappropriateKeywords.some(keyword => 
+      movie.title.toLowerCase().includes(keyword)
+    );
+    const hasInappropriateOverview = inappropriateKeywords.some(keyword =>
+      movie.overview.toLowerCase().includes(keyword)
+    );
+    return !hasInappropriateTitle && !hasInappropriateOverview;
+  });
+};
+
+const fetchMoviesByMood = async (mood) => {
   try {
+    const genreQuery = mood.genres.join(",");
+    const certificationFilter = mood.avoidSexualContent
+      ? "&certification_country=US&certification.lte=PG-13"
+      : ""; // Add certification filter for moods like "Sad" and "Love"
+
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}`
     );
 
-    const movies = response.data.results;
-    
-    // Shuffle the movie array
-    const shuffledMovies = movies.sort(() => Math.random() - 0.5);
+    let movies = response.data.results;
+
+    // Filter out movies with inappropriate keywords in title or description
+    movies = filterOutInappropriateMovies(movies);
+
+    // Filter out previously recommended movies
+    const newMovies = movies.filter((movie) => !previousRecommendations.includes(movie.id));
+
+    // Shuffle the new movie array
+    const shuffledMovies = newMovies.sort(() => Math.random() - 0.5);
 
     // Return top 4 shuffled movies
-    return shuffledMovies.slice(0, 4);
+    const recommendedMovies = shuffledMovies.slice(0, 4);
+
+    // Add new recommended movies to the previous recommendations list
+    previousRecommendations.push(...recommendedMovies.map((movie) => movie.id));
+
+    return recommendedMovies;
   } catch (error) {
     console.error("Error fetching movies:", error);
     toast.error("Failed to fetch movie recommendations.");
@@ -79,34 +113,37 @@ const HomePage = () => {
   const [recommendations, setRecommendations] = useState([]); // Movie recommendations
   const [loading, setLoading] = useState(false); // Loading state
 
+  // Reset previous recommendations when the component mounts or unmounts
+  useEffect(() => {
+    return () => {
+      previousRecommendations = [];
+    };
+  }, []);
+
   const handleMoodSelect = async (mood) => {
     setSelectedMood(mood.name);
     setLoading(true); // Show loading indicator
-    const movies = await fetchMoviesByMood(mood.genre);
+    const movies = await fetchMoviesByMood(mood);
     setRecommendations(movies); // Set movie recommendations
     setLoading(false); // Turn off loading
   };
 
   const refreshMovies = async () => {
-    const selectedGenre = predefinedMoods.find(
-      (m) => m.name === selectedMood,
-    ).genre;
+    const selectedMoodObj = predefinedMoods.find((m) => m.name === selectedMood);
     setLoading(true); // Show loading indicator
-    const movies = await fetchMoviesByMood(selectedGenre); // Fetch random movies
+    const movies = await fetchMoviesByMood(selectedMoodObj); // Fetch new random movies
     setRecommendations(movies); // Update movie recommendations
     setLoading(false); // Turn off loading
   };
 
   const handleAddToList = async (movie) => {
     try {
-      // Check if the user is logged in
       const token = localStorage.getItem("token");
       if (!token) {
         toast.error("Please log in to add movies to your list.");
         return;
       }
 
-      // Send post request
       const response = await axios.post(
         "/api/MovieListEntry",
         {
@@ -122,10 +159,9 @@ const HomePage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
-      // Check if successful
       if (response.status === 201) {
         toast.success(`${movie.title} added to your list!`);
       } else {
@@ -133,7 +169,6 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error("Error adding movie to list:", error);
-      // Handle different error scenarios
       if (error.response) {
         switch (error.response.status) {
           case 401:
@@ -149,7 +184,6 @@ const HomePage = () => {
     }
   };
 
-  // Helper function to convert genre ID to name
   const genreIdToName = (id) => {
     const genres = {
       27: "Horror",
@@ -199,17 +233,14 @@ const HomePage = () => {
         ))}
       </div>
 
-      {/* No mood selected message */}
       {!selectedMood && !loading && (
         <p className="text-center text-gray-500">
           Please select a mood to be recommended movies.
         </p>
       )}
 
-      {/* Loading indicator */}
       {loading && <p className="text-center">Loading...</p>}
 
-      {/* Recommendations section */}
       {recommendations.length > 0 && !loading && (
         <div>
           <div className="flex justify-between items-center mb-4">
@@ -244,7 +275,7 @@ const HomePage = () => {
                   <img
                     src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
                     alt={movie.title}
-                    className="w-full h-96"
+                    className="w-full h-96 object-cover"
                   />
                   <div className="p-4">
                     <h3 className="font-semibold text-lg mb-2 truncate">
@@ -277,7 +308,6 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* No recommendations */}
       {!loading && recommendations.length === 0 && selectedMood && (
         <p className="text-center text-gray-500">
           No recommendations available for this mood. Please try again.
@@ -288,4 +318,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
