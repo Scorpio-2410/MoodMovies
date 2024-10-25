@@ -7,7 +7,7 @@ import axios from "axios";
 // TMDB API key
 const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582";
 
-// Predefined moods with refined genre mapping for Sad movies
+// Predefined moods with genre mapping for movies
 const predefinedMoods = [
   {
     name: "Happy",
@@ -19,7 +19,7 @@ const predefinedMoods = [
   {
     name: "Sad",
     emoji: "😢",
-    genres: [18, 99], // Drama, Documentaries (serious themes like depression, war, death)
+    genres: [18, 99], // Drama, Documentaries 
     bgColor: "bg-blue-300",
     textColor: "text-blue-900",
     avoidSexualContent: true, // Flag for filtering out sexual content
@@ -27,7 +27,7 @@ const predefinedMoods = [
   {
     name: "Love",
     emoji: "❤️",
-    genres: [10749, 18], // Romance and Drama (filtered for love stories, avoiding explicit content)
+    genres: [10749, 18], // Romance and Drama 
     bgColor: "bg-red-300",
     textColor: "text-red-900",
     avoidSexualContent: true, // Flag for filtering out sexual content
@@ -77,7 +77,7 @@ const fetchMoviesByMood = async (mood) => {
     const genreQuery = mood.genres.join(",");
     const certificationFilter = mood.avoidSexualContent
       ? "&certification_country=US&certification.lte=PG-13"
-      : ""; // Add certification filter for moods like "Sad" and "Love"
+      : "";
 
     const response = await axios.get(
       `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}`
