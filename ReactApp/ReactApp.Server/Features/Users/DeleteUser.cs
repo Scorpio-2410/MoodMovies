@@ -5,11 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ReactApp.Server.Features.Users
 {
-    // DeleteUser request and response classes
     public class DeleteUser : IRequest<DeleteUserResponse>
     {
         public int UserId { get; set; }
-        public bool IsConfirmed { get; set; } // Confirmation flag
+        public bool IsConfirmed { get; set; }
     }
 
     public class DeleteUserResponse
@@ -17,24 +16,23 @@ namespace ReactApp.Server.Features.Users
         public bool IsSuccessful { get; set; }
     }
 
-    // Validator for DeleteUser request
     public class DeleteUserValidator : AbstractValidator<DeleteUser>
     {
         public DeleteUserValidator()
         {
             RuleFor(x => x.IsConfirmed)
-                .Equal(true).WithMessage("Profile deletion must be confirmed."); // Ensure user confirmed deletion
+                .Equal(true).WithMessage("Profile deletion must be confirmed.");
         }
     }
 
-    // Generic repository interface for CRUD operations
     public interface IRepository<T> where T : class
     {
         Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken);
         Task RemoveAsync(T entity, CancellationToken cancellationToken);
+        Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken); // For deleting related data
+        Task<IEnumerable<T>> GetByUserIdAsync(int userId, CancellationToken cancellationToken); // To get related records
     }
 
-    // Generic repository implementation using Entity Framework Core
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly MoodMoviesContext _context;
@@ -56,39 +54,56 @@ namespace ReactApp.Server.Features.Users
             _entities.Remove(entity);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task RemoveRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+        {
+            _entities.RemoveRange(entities);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<T>> GetByUserIdAsync(int userId, CancellationToken cancellationToken)
+        {
+            return await _entities.Where(e => EF.Property<int>(e, "UserId") == userId).ToListAsync(cancellationToken);
+        }
     }
 
-    // Handler for DeleteUser request using the generic repository
     public class DeleteUserHandler : IRequestHandler<DeleteUser, DeleteUserResponse>
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IRepository<Social> _socialRepository;
+        private readonly IRepository<MovieListEntry> _movieListEntryRepository;
 
-        public DeleteUserHandler(IRepository<User> userRepository)
+        public DeleteUserHandler(
+            IRepository<User> userRepository,
+            IRepository<Social> socialRepository,
+            IRepository<MovieListEntry> movieListEntryRepository)
         {
             _userRepository = userRepository;
+            _socialRepository = socialRepository;
+            _movieListEntryRepository = movieListEntryRepository;
         }
 
         public async Task<DeleteUserResponse> Handle(DeleteUser request, CancellationToken cancellationToken)
         {
-            // Validate confirmation
             if (!request.IsConfirmed)
             {
                 throw new ValidationException("Deletion not confirmed by the user.");
             }
 
-            // LINQ query to fetch user
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
-
-            // If user is not found
             if (user == null)
             {
                 throw new ValidationException("User not found.");
             }
 
-            // Delete the user using the generic repository
+            var userPosts = await _socialRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+            var userMovies = await _movieListEntryRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+
+            await _socialRepository.RemoveRangeAsync(userPosts, cancellationToken);
+            await _movieListEntryRepository.RemoveRangeAsync(userMovies, cancellationToken);
+
             await _userRepository.RemoveAsync(user, cancellationToken);
 
-            // Return a successful response
             return new DeleteUserResponse { IsSuccessful = true };
         }
     }
