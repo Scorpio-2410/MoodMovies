@@ -164,7 +164,7 @@ const UpdateProfilePage = () => {
         localStorage.removeItem("token"); // Remove the token or any session data
         toast.success("Profile Deleted Successfully! Redirecting to Index");
         setTimeout(() => {
-          window.location.href = "https://localhost:5174/";
+          window.location.href = "https://localhost:5173/";
         }, 3000);
       } catch (error) {
         console.error("Error deleting profile", error);
