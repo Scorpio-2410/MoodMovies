@@ -60,16 +60,18 @@ let previousRecommendations = [];
 
 // Function to check for keywords that might indicate inappropriate content and movies with no image
 const filterOutInappropriateMovies = (movies) => {
-  const inappropriateKeywords = ['erotic', 'sex', 'adult', 'nudity', 'porn'];
-  return movies.filter(movie => {
-    const hasInappropriateTitle = inappropriateKeywords.some(keyword =>
-      movie.title.toLowerCase().includes(keyword)
+  const inappropriateKeywords = ["erotic", "sex", "adult", "nudity", "porn"];
+  return movies.filter((movie) => {
+    const hasInappropriateTitle = inappropriateKeywords.some((keyword) =>
+      movie.title.toLowerCase().includes(keyword),
     );
-    const hasInappropriateOverview = inappropriateKeywords.some(keyword =>
-      movie.overview.toLowerCase().includes(keyword)
+    const hasInappropriateOverview = inappropriateKeywords.some((keyword) =>
+      movie.overview.toLowerCase().includes(keyword),
     );
     // Filter out movies with inappropriate content or missing poster
-    return !hasInappropriateTitle && !hasInappropriateOverview && movie.poster_path;
+    return (
+      !hasInappropriateTitle && !hasInappropriateOverview && movie.poster_path
+    );
   });
 };
 
@@ -86,7 +88,7 @@ const fetchMoviesByMood = async (mood) => {
 
     // Append the page parameter to request additional pages
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}&page=${currentPage}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreQuery}${certificationFilter}&page=${currentPage}`,
     );
 
     let movies = response.data.results;
@@ -130,7 +132,9 @@ const HomePage = () => {
   };
 
   const refreshMovies = async () => {
-    const selectedMoodObj = predefinedMoods.find((m) => m.name === selectedMood);
+    const selectedMoodObj = predefinedMoods.find(
+      (m) => m.name === selectedMood,
+    );
     setLoading(true); // Show loading indicator
     const movies = await fetchMoviesByMood(selectedMoodObj); // Fetch new random movies
     setRecommendations(movies); // Update movie recommendations
@@ -160,7 +164,7 @@ const HomePage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.status === 201) {
@@ -215,7 +219,7 @@ const HomePage = () => {
       <h1 className="text-4xl font-bold text-center mb-8">Select Your Mood</h1>
 
       {/* Mood selection buttons */}
-      <div className="flex justify-center mb-8 space-x-4 flex-wrap">
+      <div className="flex justify-center mb-8 gap-x-4 gap-y-4 flex-wrap">
         {predefinedMoods.map((mood) => (
           <div
             key={mood.name}
@@ -268,7 +272,7 @@ const HomePage = () => {
                 onClick={() =>
                   window.open(
                     `https://www.themoviedb.org/movie/${movie.id}`,
-                    "_blank"
+                    "_blank",
                   )
                 }
               >
@@ -319,4 +323,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
