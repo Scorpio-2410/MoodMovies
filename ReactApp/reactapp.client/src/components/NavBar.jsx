@@ -1,24 +1,26 @@
-import { Link, useLocation } from "react-router-dom";
-import { Film, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Film, User, Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner"; // Import toast
 
 const Navbar = ({ isLoggedIn, handleLogout }) => {
-  const location = useLocation();
-  const [isProfileOpen, setIsProfileOpen] = useState(false); 
-  const dropdownRef = useRef(null); 
-
-  const isIndexPage = location.pathname === '/';
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // New state for mobile menu
 
   const toggleProfileDropdown = () => {
     setIsProfileOpen(!isProfileOpen);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsProfileOpen(false); 
+        setIsProfileOpen(false);
       }
     };
 
@@ -35,7 +37,7 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
 
   const handleLogoutAndToast = () => {
     handleLogout();
-    toast.success("Successfully Logged Out!"); 
+    toast.success("Successfully Logged Out!");
   };
 
   return (
@@ -49,15 +51,15 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
           MoviesByMood
         </Link>
 
+        {/* Mobile menu button */}
+        <button className="md:hidden text-white" onClick={toggleMobileMenu}>
+          {/* Hamburger icon */}
+          <Menu className="h-6 w-6" />
+        </button>
+
+        {/* Desktop menu */}
         <div className="hidden md:flex space-x-6 items-center">
-          {isIndexPage ? (
-            <Link
-              to="/login"
-              className="text-white hover:text-gray-200 transition-colors"
-            >
-              Login
-            </Link>
-          ) : isLoggedIn ? (
+          {isLoggedIn ? (
             <>
               <Link
                 to="/home"
@@ -110,12 +112,82 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
                 )}
               </div>
             </>
-          ) : null}
+          ) : (
+            <Link
+              to="/login"
+              className="text-white hover:text-gray-200 transition-colors"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-primary ">
+          <div className="flex flex-col space-y-2 p-4">
+            {isLoggedIn ? (
+              <>
+                <Link
+                  to="/home"
+                  className="text-white hover:text-gray-200 transition-colors"
+                  onClick={toggleMobileMenu} // Close menu on click
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/all-movies"
+                  className="text-white hover:text-gray-200 transition-colors"
+                  onClick={toggleMobileMenu} // Close menu on click
+                >
+                  All Movies
+                </Link>
+                <Link
+                  to="/my-list"
+                  className="text-white hover:text-gray-200 transition-colors"
+                  onClick={toggleMobileMenu} // Close menu on click
+                >
+                  My List
+                </Link>
+                <Link
+                  to="/social"
+                  className="text-white hover:text-gray-200 transition-colors"
+                  onClick={toggleMobileMenu} // Close menu on click
+                >
+                  Socials
+                </Link>
+                <Link
+                  to="/update-profile"
+                  className="text-white hover:text-gray-200 transition-colors"
+                  onClick={toggleMobileMenu} // Close menu on click
+                >
+                  Update Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogoutAndToast();
+                    toggleMobileMenu(); // Close menu on logout
+                  }}
+                  className="text-white hover:text-gray-200 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="text-white hover:text-gray-200 transition-colors"
+                onClick={toggleMobileMenu} // Close menu on click
+              >
+                Login
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
 
 export default Navbar;
-
