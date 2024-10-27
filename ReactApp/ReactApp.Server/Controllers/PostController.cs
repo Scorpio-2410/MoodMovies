@@ -79,7 +79,7 @@ namespace ReactApp.Server.Controllers
             try
             {
                 post.UserId = GetUserIdFromToken();
-                post.User = null;
+                post.User = null; // Avoid circular references when serializing
 
                 var createdPost = await _postService.CreatePostAsync(post);
                 return CreatedAtAction(nameof(GetPost), new { id = createdPost.PostId }, createdPost);

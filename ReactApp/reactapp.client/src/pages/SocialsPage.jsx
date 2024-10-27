@@ -7,10 +7,12 @@ import debounce from 'lodash/debounce';
 
 const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582";
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w92";
+const TMDB_MOVIE_BASE_URL = "https://www.themoviedb.org/movie/";
 
 const SocialsPage = () => {
   const [newPost, setNewPost] = useState({ title: '', content: '' });
   const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]); // State for filtered posts
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All Posts");
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -18,7 +20,26 @@ const SocialsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [user, setUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(""); // State for logged-in user's username
+
+  // Fetch the logged-in user's profile
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await axios.get('/api/user/profile-fetch', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data && response.data.userName) {
+        setLoggedInUser(response.data.userName); // Set logged-in user's username
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast.error("Failed to fetch user profile.");
+    }
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -27,35 +48,25 @@ const SocialsPage = () => {
     setSearchTerm('');
   };
 
-  const fetchUser = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const response = await axios.get('/api/user/profile-fetch', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.data && response.data.userName) {
-        setUser(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      toast.error("Failed to fetch user profile.");
-    }
-  };
-
   const fetchPosts = async () => {
     try {
       const response = await axios.get('/api/Post/all');
-      const postsWithMovies = await Promise.all(response.data.map(async (post) => {
-        if (post.movieId) {
-          const movie = await fetchMovieById(post.movieId);
-          return { ...post, movie };
-        }
-        return post;
-      }));
-      setPosts(postsWithMovies.reverse());
+      const postsWithMovies = await Promise.all(
+        response.data.map(async (post) => {
+          if (post.movieId) {
+            const movie = await fetchMovieById(post.movieId);
+            return { ...post, movie };
+          }
+          return post;
+        })
+      );
+
+      const sortedPosts = postsWithMovies.sort(
+        (a, b) => new Date(b.postDateTime) - new Date(a.postDateTime)
+      );
+
+      setPosts(sortedPosts);
+      setFilteredPosts(sortedPosts); // Set filtered posts initially
     } catch (error) {
       console.error("Error fetching posts:", error);
       toast.error("Failed to fetch posts.");
@@ -64,7 +75,9 @@ const SocialsPage = () => {
 
   const fetchMovieById = async (movieId) => {
     try {
-      const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`);
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`
+      );
       return response.data;
     } catch (error) {
       console.error('Error fetching movie by ID:', error);
@@ -73,8 +86,8 @@ const SocialsPage = () => {
   };
 
   useEffect(() => {
-    fetchUser();
-    fetchPosts();
+    fetchUserProfile(); // Fetch logged-in user profile
+    fetchPosts(); // Fetch posts
   }, []);
 
   const fetchMovies = async (query) => {
@@ -118,18 +131,15 @@ const SocialsPage = () => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    if (!token || !user) {
+    if (!token) {
       toast.error("Please log in to create a new post.");
       return;
     }
 
-    // Create a new post entry including user information and description
     const newPostEntry = {
       movieId: selectedMovie?.id || null,
       postDateTime: new Date().toISOString(),
-      description: newPost.content,
-      userName: user.userName, // Include userName in the post
-      movie: selectedMovie,
+      movieThoughts: newPost.content, // Update to match backend field name
     };
 
     try {
@@ -138,7 +148,7 @@ const SocialsPage = () => {
       });
 
       if (response.status === 201) {
-        setPosts((prevPosts) => [newPostEntry, ...prevPosts]); // Add new post to top
+        fetchPosts(); // Refresh the post list to show the new post at the top
         toast.success("Post has been created!");
       } else {
         toast.error("Failed to create post. Please try again.");
@@ -157,19 +167,33 @@ const SocialsPage = () => {
       toast.error("Please log in to delete a post.");
       return;
     }
-  
+
     try {
       await axios.delete(`/api/Post/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { postId },
       });
       setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+      setFilteredPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
       toast.success("Post deleted successfully.");
     } catch (error) {
       console.error("Error deleting post:", error);
       toast.error("Failed to delete post.");
     }
   };
+
+  const filterPosts = () => {
+    if (statusFilter === "Your Posts") {
+      // Filter posts by logged-in user's username
+      setFilteredPosts(posts.filter((post) => post.user?.userName === loggedInUser));
+    } else {
+      setFilteredPosts(posts); // Show all posts
+    }
+  };
+
+  useEffect(() => {
+    filterPosts();
+  }, [statusFilter, posts, loggedInUser]);
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -190,11 +214,11 @@ const SocialsPage = () => {
       </div>
 
       <div className="mt-8">
-        {posts.length === 0 ? (
-          <p className="text-gray-500">No posts to display. Be the first to create a post!</p>
+        {filteredPosts.length === 0 ? (
+          <p className="text-gray-500">No posts to display.</p>
         ) : (
           <div className="space-y-4">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <div key={post.postId} className="border p-4 rounded-lg shadow-md flex">
                 {post.movie ? (
                   <img
@@ -208,9 +232,16 @@ const SocialsPage = () => {
                   </div>
                 )}
                 <div className="flex-1">
-                  <h2 className="font-semibold text-lg">{post.userName || "Anonymous"}</h2>
-                  <h3 className="font-semibold text-md text-blue-500">{post.movie?.title || "No Movie Selected"}</h3>
-                  <p className="text-gray-700">{post.description}</p>
+                  <h2 className="font-semibold text-lg">{"@" + post.user?.userName || "Anonymous"}</h2>
+                  <a
+                    href={`${TMDB_MOVIE_BASE_URL}${post.movie?.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-md text-blue-500 hover:underline"
+                  >
+                    {post.movie?.title || "No Movie Selected"}
+                  </a>
+                  <p className="text-gray-700 mt-2">{post.movieThoughts || post.description}</p>
                   <p className="text-sm text-gray-500">{new Date(post.postDateTime).toLocaleString()}</p>
                   <div className="flex items-center mt-2">
                     <Button className="ml-4" onClick={() => handleDelete(post.postId)}>

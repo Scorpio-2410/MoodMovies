@@ -45,10 +45,12 @@ namespace ReactApp.Server.Features.Posts
             if (user == null) throw new Exception("User not found.");
 
             post.User = user;
+
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
             return post;
         }
+
 
         public async Task<Post> UpdatePostAsync(int id, Post updatedPost, int userId)
         {
