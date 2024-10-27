@@ -1,32 +1,59 @@
 using Moq;
+using NUnit.Framework;
 using ReactApp.Server.Features.Users;
 using ReactApp.Server.Models;
 using FluentValidation;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ReactServerTests
 {
     [TestFixture]
     public class DeleteUserTests
     {
+        private Mock<IRepository<User>> _mockUserRepository;
+        private Mock<IRepository<Social>> _mockSocialRepository;
+        private Mock<IRepository<MovieListEntry>> _mockMovieListEntryRepository;
+        private DeleteUserHandler _handler;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockUserRepository = new Mock<IRepository<User>>();
+            _mockSocialRepository = new Mock<IRepository<Social>>();
+            _mockMovieListEntryRepository = new Mock<IRepository<MovieListEntry>>();
+
+            _handler = new DeleteUserHandler(
+                _mockUserRepository.Object,
+                _mockSocialRepository.Object,
+                _mockMovieListEntryRepository.Object
+            );
+        }
+
         [Test]
         public async Task DeleteUser_SuccessfullyDeletesUser_WhenConfirmed()
         {
             // Arrange
             var userId = 1;
             var user = new User { UserId = userId };
+            var userPosts = new List<Social> { new Social { UserId = userId } };
+            var userMovies = new List<MovieListEntry> { new MovieListEntry { UserId = userId } };
 
-            var mockRepository = new Mock<IRepository<User>>();
-            mockRepository.Setup(repo => repo.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(user);
+            _mockSocialRepository.Setup(repo => repo.GetByUserIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(userPosts);
+            _mockMovieListEntryRepository.Setup(repo => repo.GetByUserIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(userMovies);
 
             var request = new DeleteUser { UserId = userId, IsConfirmed = true };
-            var handler = new DeleteUserHandler(mockRepository.Object);
 
             // Act
-            var response = await handler.Handle(request, CancellationToken.None);
+            var response = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(response.IsSuccessful);
-            mockRepository.Verify(repo => repo.RemoveAsync(user, It.IsAny<CancellationToken>()), Times.Once);
+            _mockSocialRepository.Verify(repo => repo.RemoveRangeAsync(userPosts, It.IsAny<CancellationToken>()), Times.Once);
+            _mockMovieListEntryRepository.Verify(repo => repo.RemoveRangeAsync(userMovies, It.IsAny<CancellationToken>()), Times.Once);
+            _mockUserRepository.Verify(repo => repo.RemoveAsync(user, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -35,12 +62,9 @@ namespace ReactServerTests
             // Arrange
             var userId = 1;
             var request = new DeleteUser { UserId = userId, IsConfirmed = false };
-            var mockRepository = new Mock<IRepository<User>>();
-
-            var handler = new DeleteUserHandler(mockRepository.Object);
 
             // Act & Assert
-            var ex = Assert.ThrowsAsync<ValidationException>(() => handler.Handle(request, CancellationToken.None));
+            var ex = Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(request, CancellationToken.None));
             Assert.AreEqual("Deletion not confirmed by the user.", ex.Message);
         }
 
@@ -50,14 +74,13 @@ namespace ReactServerTests
             // Arrange
             var userId = 999;
             var request = new DeleteUser { UserId = userId, IsConfirmed = true };
-            var mockRepository = new Mock<IRepository<User>>();
-            mockRepository.Setup(repo => repo.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync((User)null);
 
-            var handler = new DeleteUserHandler(mockRepository.Object);
+            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync((User)null);
 
             // Act & Assert
-            var ex = Assert.ThrowsAsync<ValidationException>(() => handler.Handle(request, CancellationToken.None));
+            var ex = Assert.ThrowsAsync<ValidationException>(() => _handler.Handle(request, CancellationToken.None));
             Assert.AreEqual("User not found.", ex.Message);
         }
     }
 }
+
