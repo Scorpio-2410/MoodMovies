@@ -17,7 +17,7 @@ public partial class MoodMoviesContext : DbContext
 
     public virtual DbSet<MovieListEntry> MovieListEntries { get; set; }
 
-    public virtual DbSet<Social> Socials { get; set; }
+    public virtual DbSet<Post> Posts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -42,20 +42,30 @@ public partial class MoodMoviesContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.MovieListEntries).HasForeignKey(d => d.UserId);
         });
 
-        modelBuilder.Entity<Social>(entity =>
+        modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.PostId);
-
-            entity.ToTable("Social");
+            entity.ToTable("Post");
 
             entity.Property(e => e.PostId).HasColumnName("PostID");
-            entity.Property(e => e.DateTime).HasColumnType("DATETIME");
-            entity.Property(e => e.Description).HasColumnType("VARCHAR(255)");
             entity.Property(e => e.MovieId).HasColumnName("MovieID");
-            entity.Property(e => e.Title).HasColumnType("VARCHAR(255)");
+            entity.Property(e => e.NumberOfDislikes)
+                .HasDefaultValue(0)
+                .HasColumnType("INT");
+            entity.Property(e => e.NumberOfLikes)
+                .HasDefaultValue(0)
+                .HasColumnType("INT");
+            entity.Property(e => e.PostDateTime)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("DATETIME");
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Socials).HasForeignKey(d => d.UserId);
+            entity.HasOne(d => d.Movie).WithMany(p => p.Posts)
+                .HasForeignKey(d => d.MovieId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(d => d.User).WithMany(p => p.Posts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<User>(entity =>

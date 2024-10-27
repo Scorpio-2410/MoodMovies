@@ -25,5 +25,7 @@ public partial class MovieListEntry
 
     public DateTime? DateAdded { get; set; }
 
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
     public virtual User? User { get; set; }
 }

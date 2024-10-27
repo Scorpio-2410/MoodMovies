@@ -21,5 +21,5 @@ public partial class User
 
     public virtual ICollection<MovieListEntry> MovieListEntries { get; set; } = new List<MovieListEntry>();
 
-    public virtual ICollection<Social> Socials { get; set; } = new List<Social>();
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 }
