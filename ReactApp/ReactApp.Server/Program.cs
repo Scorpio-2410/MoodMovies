@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using ReactApp.Server.Features.Users;
 using ReactApp.Server.Features.MovieListEntries;
+using ReactApp.Server.Features.Posts;
 
 namespace ReactApp.Server
 {
@@ -55,6 +56,10 @@ namespace ReactApp.Server
             builder.Services.AddAuthorization();
 
             builder.Services.AddScoped<IMovieListEntryService, MovieListEntryService>();
+            builder.Services.AddScoped<IPostService, PostService>();
+
+
+
 
             var app = builder.Build();
 
