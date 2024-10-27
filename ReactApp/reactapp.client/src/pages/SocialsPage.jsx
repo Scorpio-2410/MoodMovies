@@ -18,12 +18,31 @@ const SocialsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [user, setUser] = useState(null);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setNewPost({ title: '', content: '' });
     setSelectedMovie(null);
     setSearchTerm('');
+  };
+
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await axios.get('/api/user/profile-fetch', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data && response.data.userName) {
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast.error("Failed to fetch user profile.");
+    }
   };
 
   const fetchPosts = async () => {
@@ -36,7 +55,7 @@ const SocialsPage = () => {
         }
         return post;
       }));
-      setPosts(postsWithMovies);
+      setPosts(postsWithMovies.reverse());
     } catch (error) {
       console.error("Error fetching posts:", error);
       toast.error("Failed to fetch posts.");
@@ -54,6 +73,7 @@ const SocialsPage = () => {
   };
 
   useEffect(() => {
+    fetchUser();
     fetchPosts();
   }, []);
 
@@ -98,15 +118,18 @@ const SocialsPage = () => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    if (!token) {
+    if (!token || !user) {
       toast.error("Please log in to create a new post.");
       return;
     }
 
+    // Create a new post entry including user information and description
     const newPostEntry = {
       movieId: selectedMovie?.id || null,
       postDateTime: new Date().toISOString(),
       description: newPost.content,
+      userName: user.userName, // Include userName in the post
+      movie: selectedMovie,
     };
 
     try {
@@ -115,7 +138,7 @@ const SocialsPage = () => {
       });
 
       if (response.status === 201) {
-        fetchPosts();
+        setPosts((prevPosts) => [newPostEntry, ...prevPosts]); // Add new post to top
         toast.success("Post has been created!");
       } else {
         toast.error("Failed to create post. Please try again.");
@@ -185,7 +208,7 @@ const SocialsPage = () => {
                   </div>
                 )}
                 <div className="flex-1">
-                  <h2 className="font-semibold text-lg">{post.user?.userName || "Anonymous"}</h2>
+                  <h2 className="font-semibold text-lg">{post.userName || "Anonymous"}</h2>
                   <h3 className="font-semibold text-md text-blue-500">{post.movie?.title || "No Movie Selected"}</h3>
                   <p className="text-gray-700">{post.description}</p>
                   <p className="text-sm text-gray-500">{new Date(post.postDateTime).toLocaleString()}</p>
