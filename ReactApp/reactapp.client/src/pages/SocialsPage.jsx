@@ -21,6 +21,8 @@ const SocialsPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(""); // State for logged-in user's username
+  const [editMode, setEditMode] = useState({ active: false, postId: null }); // State for edit mode
+  const [editContent, setEditContent] = useState(''); // State for updated content
 
   // Fetch the logged-in user's profile
   const fetchUserProfile = async () => {
@@ -173,12 +175,36 @@ const SocialsPage = () => {
         headers: { Authorization: `Bearer ${token}` },
         data: { postId },
       });
-      setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
-      setFilteredPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+      fetchPosts(); // Refresh posts after deletion
       toast.success("Post deleted successfully.");
     } catch (error) {
       console.error("Error deleting post:", error);
       toast.error("Failed to delete post.");
+    }
+  };
+
+  const handleEdit = (postId, content) => {
+    setEditMode({ active: true, postId });
+    setEditContent(content);
+  };
+
+  const handleUpdate = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to update a post.");
+      return;
+    }
+
+    try {
+      await axios.put(`/api/Post/${editMode.postId}`, { movieThoughts: editContent }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchPosts(); // Refresh posts after update
+      setEditMode({ active: false, postId: null });
+      toast.success("Post updated successfully.");
+    } catch (error) {
+      console.error("Error updating post:", error);
+      toast.error("Failed to update post.");
     }
   };
 
@@ -224,10 +250,10 @@ const SocialsPage = () => {
                   <img
                     src={`${TMDB_IMAGE_BASE_URL}${post.movie.poster_path}`}
                     alt={post.movie.title}
-                    className="w-20 h-30 rounded mr-4"
+                    className="w-24 h-36 rounded mr-4 object-cover"
                   />
                 ) : (
-                  <div className="w-20 h-30 bg-gray-300 rounded mr-4 flex items-center justify-center">
+                  <div className="w-24 h-36 bg-gray-300 rounded mr-4 flex items-center justify-center">
                     <span className="text-xs text-gray-500">No Image</span>
                   </div>
                 )}
@@ -241,13 +267,34 @@ const SocialsPage = () => {
                   >
                     {post.movie?.title || "No Movie Selected"}
                   </a>
-                  <p className="text-gray-700 mt-2">{post.movieThoughts || post.description}</p>
+                  {editMode.active && editMode.postId === post.postId ? (
+                    <div>
+                      <textarea
+                        className="w-full mt-2 p-2 border rounded"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                      />
+                      <Button onClick={handleUpdate} className="mt-2">
+                        Save
+                      </Button>
+                      <Button onClick={() => setEditMode({ active: false, postId: null })} className="mt-2 ml-2">
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-gray-700 mt-2">{post.movieThoughts || post.description}</p>
+                  )}
                   <p className="text-sm text-gray-500">{new Date(post.postDateTime).toLocaleString()}</p>
-                  <div className="flex items-center mt-2">
-                    <Button className="ml-4" onClick={() => handleDelete(post.postId)}>
-                      Delete
-                    </Button>
-                  </div>
+                  {post.user?.userName === loggedInUser && (
+                    <div className="flex items-center mt-2">
+                      <Button className="ml-4" onClick={() => handleDelete(post.postId)}>
+                        Delete
+                      </Button>
+                      <Button className="ml-2" onClick={() => handleEdit(post.postId, post.movieThoughts)}>
+                        Update
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -336,3 +383,4 @@ const SocialsPage = () => {
 };
 
 export default SocialsPage;
+
