@@ -1,4 +1,4 @@
-﻿CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE User (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Primary Key
     UserName VARCHAR(255) NOT NULL UNIQUE,     -- Unique Username
@@ -8,7 +8,6 @@ CREATE TABLE User (
     Email VARCHAR(255) UNIQUE,                 -- Unique Email
     BIO TEXT                                   -- Bio
 );
-
 CREATE TABLE MovieListEntry (
     EntryId INTEGER PRIMARY KEY AUTOINCREMENT,  -- Primary Key
     UserId INTEGER,                             -- Foreign Key to User(UserID)
@@ -22,14 +21,16 @@ CREATE TABLE MovieListEntry (
     DateAdded DATETIME,                         -- Date and time entry was added
     FOREIGN KEY (UserId) REFERENCES User(UserId) -- Foreign Key relationship
 );
-CREATE TABLE Social (
-    PostID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Primary Key
-    UserID INTEGER,                           -- Foreign Key to User(UserID)
-    MovieID INTEGER,                          -- Foreign Key reference to an API Movie ID
-    Description VARCHAR(255),                 -- Description of the post
-    Title VARCHAR(255),                       -- Title of the post
-    DateTime DATE,                        -- Date and time of the post
-    Comments TEXT,                            -- Comments on the post
-    NumberOfLikes INTEGER,                    
-    FOREIGN KEY (UserID) REFERENCES User(UserID) -- Foreign Key relationship
+CREATE TABLE Post (
+    PostID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INTEGER,
+    MovieID INTEGER,
+    PostDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    NumberOfLikes INT DEFAULT 0,
+    NumberOfDislikes INT DEFAULT 0,
+    MovieThoughts TEXT,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (MovieID) REFERENCES Movies(MovieID)
 );
+
+ 

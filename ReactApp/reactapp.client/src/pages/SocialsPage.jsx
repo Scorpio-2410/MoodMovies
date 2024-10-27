@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "../compon
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import axios from 'axios';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash/debounce';
 
 const TMDB_API_KEY = "f25f87cdd05107e089c4834ff8903582";
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w92";
@@ -19,31 +19,44 @@ const SocialsPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const fetchUserId = async () => {
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setNewPost({ title: '', content: '' });
+    setSelectedMovie(null);
+    setSearchTerm('');
+  };
+
+  const fetchPosts = async () => {
     try {
-      // Send request to fetch the user profile data
-      const response = await axios.get("/api/user/profile-fetch", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-  
-      // Extract user ID from the response
-      const userId = response.data?.UserId;
-  
-      if (userId) {
-        // Store user ID in local storage
-        localStorage.setItem("userId", userId);
-        setUserData(response.data); // Set user data to state if needed
-      }
+      const response = await axios.get('/api/Post/all');
+      const postsWithMovies = await Promise.all(response.data.map(async (post) => {
+        if (post.movieId) {
+          const movie = await fetchMovieById(post.movieId);
+          return { ...post, movie };
+        }
+        return post;
+      }));
+      setPosts(postsWithMovies);
     } catch (error) {
-      console.error("Error fetching user ID:", error);
-      toast.error("Failed to fetch user ID.");
+      console.error("Error fetching posts:", error);
+      toast.error("Failed to fetch posts.");
     }
   };
 
-  
-  const userId = localStorage.getItem("userId"); // Assuming user ID is stored in localStorage
+  const fetchMovieById = async (movieId) => {
+    try {
+      const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching movie by ID:', error);
+      return null;
+    }
+  };
 
-  // Fetch movies based on search query
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   const fetchMovies = async (query) => {
     if (!query) return;
     setLoading(true);
@@ -59,27 +72,6 @@ const SocialsPage = () => {
     }
   };
 
-  // Fetch posts based on status filter
-  const fetchPosts = async () => {
-    try {
-      let url = '/api/Post';
-      if (statusFilter === 'Your Posts' && userId) {
-        url = `/api/Post?userId=${userId}`; // Fetch user's posts
-      }
-
-      const response = await axios.get(url);
-      setPosts(response.data);
-    } catch (error) {
-      console.error("Error fetching posts: " + error);
-      toast.error("Uh oh, we couldn't fetch posts right now :(");
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-    fetchUserId();
-  }, [statusFilter]);
-
   const handleInputChange = debounce((query) => {
     if (query.length > 0) {
       fetchMovies(query);
@@ -92,61 +84,68 @@ const SocialsPage = () => {
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchTerm(query);
-    setSelectedMovie(null); // Reset selected movie when the search term changes
+    setSelectedMovie(null);
     handleInputChange(query);
   };
 
   const handleSuggestionClick = (movie) => {
-    setSelectedMovie(movie); // Set the selected movie state
-    setSearchTerm(movie.title); // Update the search input with the selected movie's title
-    setShowSuggestions(false); // Hide the suggestions dropdown
-  };
-
-  const handleButtonClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setNewPost({ title: '', content: '' });
-    setSearchTerm('');
-    setSelectedMovie(null);
+    setSelectedMovie(movie);
+    setSearchTerm(movie.title);
+    setShowSuggestions(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to create a new post.");
+      return;
+    }
+
     const newPostEntry = {
-      UserId: parseInt(userId),
-      MovieId: selectedMovie?.id || null,
-      PostDateTime: new Date().toISOString(),
-      NumberOfLikes: 0,
-      NumberOfDislikes: 0,
+      movieId: selectedMovie?.id || null,
+      postDateTime: new Date().toISOString(),
+      description: newPost.content,
     };
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Please log in to create a new post.");
-        return;
-      }
-
       const response = await axios.post('/api/Post', newPostEntry, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 201) {
-        setPosts((prevPosts) => [...prevPosts, response.data]);
+        fetchPosts();
         toast.success("Post has been created!");
       } else {
-        toast.error("Uh oh, we couldn't create the post right now :(");
+        toast.error("Failed to create post. Please try again.");
       }
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error("Error creating post:", error);
       toast.error("An error occurred while creating the post.");
     }
+
     handleCloseModal();
+  };
+
+  const handleDelete = async (postId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to delete a post.");
+      return;
+    }
+  
+    try {
+      await axios.delete(`/api/Post/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { postId },
+      });
+      setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId));
+      toast.success("Post deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Failed to delete post.");
+    }
   };
 
   return (
@@ -167,7 +166,42 @@ const SocialsPage = () => {
         </div>
       </div>
 
-      <Button className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full" onClick={handleButtonClick}>
+      <div className="mt-8">
+        {posts.length === 0 ? (
+          <p className="text-gray-500">No posts to display. Be the first to create a post!</p>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <div key={post.postId} className="border p-4 rounded-lg shadow-md flex">
+                {post.movie ? (
+                  <img
+                    src={`${TMDB_IMAGE_BASE_URL}${post.movie.poster_path}`}
+                    alt={post.movie.title}
+                    className="w-20 h-30 rounded mr-4"
+                  />
+                ) : (
+                  <div className="w-20 h-30 bg-gray-300 rounded mr-4 flex items-center justify-center">
+                    <span className="text-xs text-gray-500">No Image</span>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h2 className="font-semibold text-lg">{post.user?.userName || "Anonymous"}</h2>
+                  <h3 className="font-semibold text-md text-blue-500">{post.movie?.title || "No Movie Selected"}</h3>
+                  <p className="text-gray-700">{post.description}</p>
+                  <p className="text-sm text-gray-500">{new Date(post.postDateTime).toLocaleString()}</p>
+                  <div className="flex items-center mt-2">
+                    <Button className="ml-4" onClick={() => handleDelete(post.postId)}>
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Button className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full" onClick={() => setIsModalOpen(true)}>
         +
       </Button>
 
@@ -176,7 +210,6 @@ const SocialsPage = () => {
           <DialogTitle>Create a New Post</DialogTitle>
           <DialogDescription>Share your thoughts about a movie!</DialogDescription>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            {/* Search Input */}
             <div className="relative mb-8">
               <input
                 type="text"
@@ -185,8 +218,6 @@ const SocialsPage = () => {
                 onChange={handleSearchChange}
                 className="border rounded-lg p-2 w-full"
               />
-
-              {/* Suggestions Dropdown */}
               {showSuggestions && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 bg-white border rounded-lg mt-1 z-10 max-h-60 overflow-y-auto shadow-lg">
                   {loading ? (
@@ -217,7 +248,6 @@ const SocialsPage = () => {
               )}
             </div>
 
-            {/* Display selected movie */}
             {selectedMovie && (
               <div className="flex items-center mt-4">
                 <img

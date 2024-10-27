@@ -56,6 +56,5 @@
     <Folder Include="Infrastructure\" />
     <Folder Include="Infrastructure\Validations\" />
     <Folder Include="Infrastructure\Middlewares\" />
-    <Folder Include="DBChanges\" />
   </ItemGroup>
 </Project>

@@ -46,26 +46,13 @@ public partial class MoodMoviesContext : DbContext
         {
             entity.ToTable("Post");
 
-            entity.Property(e => e.PostId).HasColumnName("PostID");
-            entity.Property(e => e.MovieId).HasColumnName("MovieID");
-            entity.Property(e => e.NumberOfDislikes)
-                .HasDefaultValue(0)
-                .HasColumnType("INT");
-            entity.Property(e => e.NumberOfLikes)
-                .HasDefaultValue(0)
-                .HasColumnType("INT");
+            entity.Property(e => e.NumberOfDislikes).HasDefaultValue(0);
+            entity.Property(e => e.NumberOfLikes).HasDefaultValue(0);
             entity.Property(e => e.PostDateTime)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("DATETIME");
-            entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.Movie).WithMany(p => p.Posts)
-                .HasForeignKey(d => d.MovieId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entity.HasOne(d => d.User).WithMany(p => p.Posts)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(d => d.User).WithMany(p => p.Posts).HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<User>(entity =>

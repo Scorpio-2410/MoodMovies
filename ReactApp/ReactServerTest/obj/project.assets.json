@@ -3469,32 +3469,35 @@
     ]
   },
   "packageFolders": {
-    "/Users/nabidulislam/.nuget/packages/": {}
+    "C:\\Users\\Nabid\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2/ReactApp/ReactServerTest/ReactServerTest.csproj",
+      "projectUniqueName": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
       "projectName": "ReactServerTest",
-      "projectPath": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2/ReactApp/ReactServerTest/ReactServerTest.csproj",
-      "packagesPath": "/Users/nabidulislam/.nuget/packages/",
-      "outputPath": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2/ReactApp/ReactServerTest/obj/",
+      "projectPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\ReactServerTest.csproj",
+      "packagesPath": "C:\\Users\\Nabid\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactServerTest\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/nabidulislam/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Nabid\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2/ReactApp/ReactApp.Server/ReactApp.Server.csproj": {
-              "projectPath": "/Users/nabidulislam/Desktop/Nabidul/University/Year 3, Semester 2/Dot NET Programming/Assessment 2/App-Dev-Assignment-2/ReactApp/ReactApp.Server/ReactApp.Server.csproj"
+            "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj": {
+              "projectPath": "C:\\Users\\Nabid\\OneDrive\\Desktop\\Productivity\\University\\Year 3, Sem 2\\Dot Net\\App-Dev-Assignment-2\\ReactApp\\ReactApp.Server\\ReactApp.Server.csproj"
             }
           }
         }
@@ -3503,6 +3506,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -3554,7 +3562,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

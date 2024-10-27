@@ -58,6 +58,9 @@ export default defineConfig({
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         }
+    },
+    optimizeDeps: {
+        include: ["jwt-decode"]
     }
 });
 

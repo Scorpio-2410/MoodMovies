@@ -70,12 +70,12 @@ namespace ReactApp.Server.Features.Users
     public class DeleteUserHandler : IRequestHandler<DeleteUser, DeleteUserResponse>
     {
         private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Social> _socialRepository;
+        private readonly IRepository<Post> _socialRepository;
         private readonly IRepository<MovieListEntry> _movieListEntryRepository;
 
         public DeleteUserHandler(
             IRepository<User> userRepository,
-            IRepository<Social> socialRepository,
+            IRepository<Post> socialRepository,
             IRepository<MovieListEntry> movieListEntryRepository)
         {
             _userRepository = userRepository;

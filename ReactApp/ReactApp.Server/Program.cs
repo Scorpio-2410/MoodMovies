@@ -57,7 +57,9 @@ namespace ReactApp.Server
 
             builder.Services.AddScoped<IMovieListEntryService, MovieListEntryService>();
             builder.Services.AddScoped<IPostService, PostService>();
-
+            builder.Services.AddControllers()
+            .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 
 
