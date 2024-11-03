@@ -15,7 +15,7 @@ User Authentication: Login, registration, and password reset functionalities wit
 Pages and Navigation:
 Home Page: Displays movie recommendations based on moods.
 Social Page: Allows users to share thoughts and interact with others.
-My Movie List: Users can manage their personalized list of favorite movies.
+My Movie List: Users can manage their personalised list of favorite movies.
 All Movie List: A comprehensive list of available movies.
 Profile Page: Users can view and update their profile information.
 Error Handling: Includes a "Not Valid Path" page for undefined routes.
@@ -31,5 +31,5 @@ Frontend: React, Tailwind CSS, various React libraries.
 
 Summary:
 
-This project was an enriching experience that showcased the power of modern full-stack development using ASP.NET and React. It emphasizes teamwork and the practical application of development principles, making it a comprehensive solution for real-world scenarios.
+This project was an enriching experience that showcased the power of modern full-stack development using ASP.NET and React. It emphasises teamwork and the practical application of development principles, making it a comprehensive solution for real-world scenarios.
 
