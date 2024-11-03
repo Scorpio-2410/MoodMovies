@@ -33,3 +33,10 @@ Summary:
 
 This project was an enriching experience that showcased the power of modern full-stack development using ASP.NET and React. It emphasises teamwork and the practical application of development principles, making it a comprehensive solution for real-world scenarios.
 
+Getting Started:
+
+Prerequisites: .NET 8, Visual Studio Code, Visual Studio 2022, Node.js, Vite.
+
+1. Clone the repository, open the react client in Visual Studio Code & react server in Visual Studio 2022.
+2. Run the server (backend) in visual studio 2022 and it will open a swagger ui in your browser. Note: Libraries and packages may have to be installed, refer to terminal warnings.
+3. Run the client (frontend) in visual studio code and in terminal, type "npm run dev" and the ui will open in the browser. Note: Libraries and packages may have to be installed, refer to terminal warnings & readMe.
