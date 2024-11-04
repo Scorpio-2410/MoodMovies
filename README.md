@@ -1,15 +1,15 @@
-MoodMovies
+# MoodMovies
 
 This project was created as part of the Application Development with .NET university subject. It was a collaborative group project where we developed a full-stack application that maps user moods and recommends movies using an external API.
 
-Overview:
+## Overview:
 
 MoodMovies is a web application designed to suggest movies based on user moods. The project features a comprehensive structure with both backend and frontend components:
 
 Backend: Built with ASP.NET Core EF Core and Swagger, communicating with a SQLite database for seamless data management. The backend incorporates various libraries for enhanced functionality, authentication, FluentValidation for robust form validations, and NUnit for testing.
 Frontend: Developed using React with Tailwind CSS, alongside various frontend libraries for an intuitive and responsive user experience.
 
-Features:
+## Features:
 
 User Authentication: Login, registration, and password reset functionalities with authenticated routes and proper redirection.
 Pages and Navigation:
@@ -23,20 +23,24 @@ Form Validation: Implemented with FluentValidation for a smooth user experience.
 Testing: Backend tested with NUnit to ensure functionality and reliability.
 
 
-Technologies Used:
+## Technologies Used:
 
 Backend: ASP.NET Core EF Core, Swagger, SQLite, FluentValidation, NUnit.
 Frontend: React, Tailwind CSS, various React libraries.
 
 
-Summary:
+## Summary:
 
 This project was an enriching experience that showcased the power of modern full-stack development using ASP.NET and React. It emphasises teamwork and the practical application of development principles, making it a comprehensive solution for real-world scenarios.
 
-Getting Started:
+## Getting Started:
 
 Prerequisites: .NET 8, Visual Studio Code, Visual Studio 2022, Node.js, Vite.
 
 1. Clone the repository, open the react client in Visual Studio Code & react server in Visual Studio 2022.
 2. Run the server (backend) in visual studio 2022 and it will open a swagger ui in your browser. Note: Libraries and packages may have to be installed, refer to terminal warnings.
 3. Run the client (frontend) in visual studio code and in terminal, type "npm run dev" and the ui will open in the browser. Note: Libraries and packages may have to be installed, refer to terminal warnings & readMe.
+
+## Demo Video:
+
+- https://youtu.be/XA2EuT92nks
